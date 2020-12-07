@@ -2,6 +2,6 @@
 using namespace std;
 int main()
 {
-    std::cout << "ÊÇµÄ" << std::endl;
+    std::cout << "123" << std::endl;
     return 0;
 }

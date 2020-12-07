@@ -1,82 +1,88 @@
 #include <iostream>
 using namespace std;
-//1.Àà·ÃÎÊĞŞÊÎ·û
-//2.¿½±´¹¹Ôìº¯Êı
-//3.ÓÑÔªº¯Êı
-//4.ÄÚÁªº¯Êı¡¢thisÖ¸Õë¡¢¾²Ì¬³ÉÔ±
-//5.ÖØÔØ
+//1.ç±»è®¿é—®ä¿®é¥°ç¬¦
+//2.æ‹·è´æ„é€ å‡½æ•°
+//3.å‹å…ƒå‡½æ•°
+//4.å†…è”å‡½æ•°ã€thisæŒ‡é’ˆã€é™æ€æˆå‘˜
+//5.é‡è½½
 // class BoxFriend;
 class Box
 {
 
 public:
     int height;
-    int length;
+    int length = 10;
     int breath;
     int getLength(void);
     void setLength(int length);
-    static int objCount; //ÔÚ´´½¨µÚÒ»¸ö¶ÔÏóÊ±£¬ËùÓĞµÄ¾²Ì¬Êı¾İ¶¼»á±»³õÊ¼»¯ÎªÁã¡£ÎÒÃÇ²»ÄÜ°Ñ¾²Ì¬³ÉÔ±µÄ³õÊ¼»¯·ÅÖÃÔÚÀàµÄ¶¨ÒåÖĞ
-    int getBreath(void)  //ÔÚÀàÄÚ²¿¶¨ÒåµÄº¯Êı¶¼ÊÇÄÚÁªº¯Êı£¬²»±Ø×¨ÃÅĞ´¹Ø¼ü×Öinline£»ÄÚÁªº¯ÊıµÄºÃ´¦ÊÇ¼Ó¿ìÔËĞĞËÙ¶È£¬Ô­ÀíÓÃ¿Õ¼ä»»Ê±¼ä¡£ËùÒÔÒ»°ã¶¼ÊÇĞ¡º¯Êı
+    static int objCount; //åœ¨åˆ›å»ºç¬¬ä¸€ä¸ªå¯¹è±¡æ—¶ï¼Œæ‰€æœ‰çš„é™æ€æ•°æ®éƒ½ä¼šè¢«åˆå§‹åŒ–ä¸ºé›¶ã€‚æˆ‘ä»¬ä¸èƒ½æŠŠé™æ€æˆå‘˜çš„åˆå§‹åŒ–æ”¾ç½®åœ¨ç±»çš„å®šä¹‰ä¸­
+    int getBreath(void)  //åœ¨ç±»å†…éƒ¨å®šä¹‰çš„å‡½æ•°éƒ½æ˜¯å†…è”å‡½æ•°ï¼Œä¸å¿…ä¸“é—¨å†™å…³é”®å­—inlineï¼›å†…è”å‡½æ•°çš„å¥½å¤„æ˜¯åŠ å¿«è¿è¡Œé€Ÿåº¦ï¼ŒåŸç†ç”¨ç©ºé—´æ¢æ—¶é—´ã€‚æ‰€ä»¥ä¸€èˆ¬éƒ½æ˜¯å°å‡½æ•°
     {
-        this->breath; //this Ö¸Õë£ºÃ¿Ò»¸ö¶ÔÏó¶¼ÄÜÍ¨¹ı this Ö¸ÕëÀ´·ÃÎÊ×Ô¼ºµÄµØÖ·¡£this Ö¸ÕëÊÇËùÓĞ³ÉÔ±º¯ÊıµÄÒşº¬²ÎÊı
+        this->breath; //this æŒ‡é’ˆï¼šæ¯ä¸€ä¸ªå¯¹è±¡éƒ½èƒ½é€šè¿‡ this æŒ‡é’ˆæ¥è®¿é—®è‡ªå·±çš„åœ°å€ã€‚this æŒ‡é’ˆæ˜¯æ‰€æœ‰æˆå‘˜å‡½æ•°çš„éšå«å‚æ•°
         return breath;
     }
     static int getCount()
     {
-        return objCount; //¾²Ì¬³ÉÔ±º¯ÊıÃ»ÓĞ this Ö¸Õë£¬Ö»ÄÜ·ÃÎÊ¾²Ì¬³ÉÔ±
+        return objCount; //é™æ€æˆå‘˜å‡½æ•°æ²¡æœ‰ this æŒ‡é’ˆï¼Œåªèƒ½è®¿é—®é™æ€æˆå‘˜
     }
-    Box operator+(const Box &box) //ÔËËã·ûÖØÔØ
+    Box operator-() //ä¸€å…ƒè¿ç®—ç¬¦
+    {
+        length = -length;
+        return *this;
+    }
+    Box operator+(const Box &box) //äºŒå…ƒè¿ç®—ç¬¦é‡è½½
     {
         Box b;
         b.breath += box.breath;
         b.length += box.length;
         b.height += box.height;
         b.noWay += box.noWay;
+        return b;
     }
-    Box();                                   //¹¹Ôìº¯Êı
-    Box(int height, int length, int breath); //´ø²ÎÊıµÄ¹¹Ôìº¯Êı
-    ~Box();                                  //Îö¹¹º¯Êı£¬Ã¿´ÎÉ¾³ıËø´´½¨¶ÔÏóÊ±µ÷ÓÃ
-    Box(const Box &obj);                     //¿½±´¹¹Ôìº¯Êı£ºÈç¹ûÔÚÀàÖĞÃ»ÓĞ¶¨Òå¿½±´¹¹Ôìº¯Êı£¬±àÒëÆ÷»á×ÔĞĞ¶¨ÒåÒ»¸ö¡£Èç¹ûÀà´øÓĞÖ¸Õë±äÁ¿£¬²¢ÓĞ¶¯Ì¬ÄÚ´æ·ÖÅä£¬ÔòËü±ØĞëÓĞÒ»¸ö¿½±´¹¹Ôìº¯Êı¡£¿½±´¹¹Ôì
+    Box();                                   //æ„é€ å‡½æ•°
+    Box(int height, int length, int breath); //å¸¦å‚æ•°çš„æ„é€ å‡½æ•°
+    ~Box();                                  //ææ„å‡½æ•°ï¼Œæ¯æ¬¡åˆ é™¤é”åˆ›å»ºå¯¹è±¡æ—¶è°ƒç”¨
+    Box(const Box &obj);                     //æ‹·è´æ„é€ å‡½æ•°ï¼šå¦‚æœåœ¨ç±»ä¸­æ²¡æœ‰å®šä¹‰æ‹·è´æ„é€ å‡½æ•°ï¼Œç¼–è¯‘å™¨ä¼šè‡ªè¡Œå®šä¹‰ä¸€ä¸ªã€‚å¦‚æœç±»å¸¦æœ‰æŒ‡é’ˆå˜é‡ï¼Œå¹¶æœ‰åŠ¨æ€å†…å­˜åˆ†é…ï¼Œåˆ™å®ƒå¿…é¡»æœ‰ä¸€ä¸ªæ‹·è´æ„é€ å‡½æ•°ã€‚æ‹·è´æ„é€ 
 
-protected: //ÓëprivateºÜÏàËÆ£¬ÔÚÅÉÉúÀàÖĞ¿ÉÒÔ·ÃÎÊ
-private:   //³ÉÔ±ºÍÀàµÄÄ¬ÈÏ·ÃÎÊĞŞÊÎ·ûÊÇ private£»Ö»ÄÜ±»±¾Àà³ÉÔ±£¨ÀàÄÚ£©ºÍÓÑÔª·ÃÎÊ£¬²»ÄÜ±»ÅÉÉúÀà·ÃÎÊ£»
+protected: //ä¸privateå¾ˆç›¸ä¼¼ï¼Œåœ¨æ´¾ç”Ÿç±»ä¸­å¯ä»¥è®¿é—®
+private:   //æˆå‘˜å’Œç±»çš„é»˜è®¤è®¿é—®ä¿®é¥°ç¬¦æ˜¯ privateï¼›åªèƒ½è¢«æœ¬ç±»æˆå‘˜ï¼ˆç±»å†…ï¼‰å’Œå‹å…ƒè®¿é—®ï¼Œä¸èƒ½è¢«æ´¾ç”Ÿç±»è®¿é—®ï¼›
     int noWay = 10;
     int *ptr;
-    friend void printnoWay(Box box); //ÓÑÔªº¯Êı£¬¿ÉÒÔ·ÃÎÊÀàµÄprivate ºÍ proteced ³ÉÔ±£¬ËûÃÇ²»ÊÇÀà³ÉÔ±£¬ÔÚÕâÀïÀàËÆÓÚÉùÃ÷Ò»¸ö½Ó¿Ú
-    friend class BoxFriend;          //ÓÑÔªº¯Êı¡¢ÀàÉùÃ÷ÔÚÄÄÀïÎŞËùÎ½
-    // friend void BoxFriend::printWidth(Box box); //Ö¸¶¨Ò»¸öÀàÖĞµÄº¯ÊıÎªÓÑÔªº¯Êı
+    friend void printnoWay(Box box); //å‹å…ƒå‡½æ•°ï¼Œå¯ä»¥è®¿é—®ç±»çš„private å’Œ proteced æˆå‘˜ï¼Œä»–ä»¬ä¸æ˜¯ç±»æˆå‘˜ï¼Œåœ¨è¿™é‡Œç±»ä¼¼äºå£°æ˜ä¸€ä¸ªæ¥å£
+    friend class BoxFriend;          //å‹å…ƒå‡½æ•°ã€ç±»å£°æ˜åœ¨å“ªé‡Œæ— æ‰€è°“
+    // friend void BoxFriend::printNoway(); //æŒ‡å®šä¸€ä¸ªç±»ä¸­çš„å‡½æ•°ä¸ºå‹å…ƒå‡½æ•°
 };
 Box::Box()
 {
     objCount++;
 }
-Box::Box(int height, int length, int breath) : height(height), length(length), breath(breath) //³õÊ¼»¯ÁĞ±í³õÊ¼»¯×Ö¶Î
+Box::Box(int height, int length, int breath) : height(height), length(length), breath(breath) //åˆå§‹åŒ–åˆ—è¡¨åˆå§‹åŒ–å­—æ®µ
 {
-    // ÎªÖ¸Õë·ÖÅäÄÚ´æ
+    // ä¸ºæŒ‡é’ˆåˆ†é…å†…å­˜
     ptr = &height;
 }
 Box::~Box()
 {
-    cout << "1¶ÔÏóÏú»ÙÊ±Ö´ĞĞ" << endl;
+    cout << "å¯¹è±¡é”€æ¯æ—¶æ‰§è¡Œ" << endl;
 }
-Box::Box(const Box &obj) //¿ÉÒÔ×Ô¶¨Òå¿½±´¹¹Ôìº¯Êı
+Box::Box(const Box &obj) //å¯ä»¥è‡ªå®šä¹‰æ‹·è´æ„é€ å‡½æ•°
 {
-    // noWay = obj.breath;//Ëæ±ã¸³Öµ
-    cout << "1µ÷ÓÃ¿½±´¹¹Ôìº¯Êı" << endl;
+    // noWay = obj.breath;//éšä¾¿èµ‹å€¼
+    cout << "1è°ƒç”¨æ‹·è´æ„é€ å‡½æ•°" << endl;
 }
 void printnoWay(Box box)
 {
-    cout << "Ö±½Ó·ÃÎÊË½ÓĞÊôĞÔnoWay=" << box.noWay << endl;
+    cout << "ç›´æ¥è®¿é—®ç§æœ‰å±æ€§noWay=" << box.noWay << endl;
 }
-void Box::setLength(int len) //³ÉÔ±º¯Êı¶¨ÒåÎŞ·¨ÏñjavaÒ»Ñù×Ô¶¯Éú³É
+void Box::setLength(int len) //æˆå‘˜å‡½æ•°å®šä¹‰æ— æ³•åƒjavaä¸€æ ·è‡ªåŠ¨ç”Ÿæˆ
 {
     length = len;
 }
-int Box::getLength() //ÔÚÀàÍâ²¿ÓÃ·¶Î§½âÎöÔËËã·û :: ¶¨Òåº¯Êı
+int Box::getLength() //åœ¨ç±»å¤–éƒ¨ç”¨èŒƒå›´è§£æè¿ç®—ç¬¦ :: å®šä¹‰å‡½æ•°
 {
     return 10;
 }
-int Box::objCount = 10; //¾²Ì¬³ÉÔ±ÔÚÍâ²¿³õÊ¼»¯
+int Box::objCount = 10; //é™æ€æˆå‘˜åœ¨å¤–éƒ¨åˆå§‹åŒ–
 class SmallBox : public Box
 {
 };
@@ -91,10 +97,12 @@ public:
 };
 int main()
 {
-    cout << "Inital Stage Count: " << Box::getCount() << endl; //¾²Ì¬³ÉÔ±º¯Êı¼´Ê¹ÔÚÀà¶ÔÏó²»´æÔÚµÄÇé¿öÏÂÒ²ÄÜ±»µ÷ÓÃ£¬¾²Ì¬º¯ÊıÖ»ÒªÊ¹ÓÃÀàÃû¼Ó·¶Î§½âÎöÔËËã·û :: ¾Í¿ÉÒÔ·ÃÎÊ¡£
-    Box box;                                                   //ÉùÃ÷Ò»¸ö¶ÔÏó,Èç¹ûÄ¬ÈÏ¹¹Ôìº¯ÊıÖ»ÉùÃ÷²»¶¨Òå»á±¨´í
-    Box copy = box;                                            //µ÷ÓÃ¿½±´¹¹Ôìº¯Êı
+    cout << "Inital Stage Count: " << Box::getCount() << endl; //é™æ€æˆå‘˜å‡½æ•°å³ä½¿åœ¨ç±»å¯¹è±¡ä¸å­˜åœ¨çš„æƒ…å†µä¸‹ä¹Ÿèƒ½è¢«è°ƒç”¨ï¼Œé™æ€å‡½æ•°åªè¦ä½¿ç”¨ç±»ååŠ èŒƒå›´è§£æè¿ç®—ç¬¦ :: å°±å¯ä»¥è®¿é—®ã€‚
+    Box box;                                                   //å£°æ˜ä¸€ä¸ªå¯¹è±¡,å¦‚æœé»˜è®¤æ„é€ å‡½æ•°åªå£°æ˜ä¸å®šä¹‰ä¼šæŠ¥é”™
+    Box copy = box;                                            //è°ƒç”¨æ‹·è´æ„é€ å‡½æ•°
     printnoWay(box);
     cout << "Final Stage Count: " << Box::getCount() << endl;
-    Box b2 = box + copy; //²Ù×÷·ûÖØÔØ
+    Box b2 = box + copy; //æ“ä½œç¬¦é‡è½½
+    -b2;
+    cout << "é‡è½½å: " << b2.length << endl;
 }
