@@ -2,22 +2,28 @@
 using namespace std;
 struct Student
 {
-    int age = 10;
+public:
+    int age = 10; //ç»“æ„ä½“ä¸­å®šä¹‰çš„æˆå‘˜å˜é‡æˆ–æˆå‘˜å‡½æ•°é»˜è®¤éƒ½æ˜¯publicå±æ€§çš„ã€‚
     string name;
     int score;
-} ss; //¶¨Òå½á¹¹ÌåµÄÊ±ºòË³±ã´´½¨±äÁ¿ss
-
+    void play();
+} ss; //å®šä¹‰ç»“æ„ä½“çš„æ—¶å€™é¡ºä¾¿åˆ›å»ºå˜é‡ss
+void Student::play()
+{
+    cout << "å®šä¹‰ç»“æ„ä½“å‡½æ•°" << endl;
+}
 int main()
 {
-    //1.ÉùÃ÷½á¹¹Ìå±äÁ¿:Ç°Ãæ×îºÃ¼ÓÉÏstruct£¬Ò²¿ÉÒÔÊ¡ÂÔ
-    struct Student s;
-    Student s1 = {30, "ÕÅÈı", 100};
+    //1.å£°æ˜ç»“æ„ä½“å˜é‡:å‰é¢æœ€å¥½åŠ ä¸Šstructï¼Œä¹Ÿå¯ä»¥çœç•¥
+    Student s;
+    struct Student s1 = {30, "å¼ ä¸‰", 100};
 
     Student *s2 = &s1;
-    cout << "s.age=" << s.age << "\ts.name=" << s.name << endl;
+    cout << "s.age=" << s.age << "\ts1.name=" << s1.name << endl;
     cout << "s1.age=" << s1.age << endl;
-    cout << "Ö¸Õës2->age=" << s2->age << endl;
-    //2.½á¹¹ÌåÊı×é
-    Student array[2] = {{30, "ÕÅÈı", 100}, {29, "ÀîËÄ", 80}};
+    cout << "s2->age=" << s2->age << endl;
+    ss.play();
+    //2.ç»“æ„ä½“æ•°ç»„
+    Student array[2] = {{30, "å¼ ä¸‰", 100}, {29, "æå››", 80}};
     return 0;
 }

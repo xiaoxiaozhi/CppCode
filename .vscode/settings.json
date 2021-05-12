@@ -1,6 +1,6 @@
 {
     "files.associations": {
-        "t": "javascript",
-        "ostream": "cpp"
+        "iostream": "cpp"
     }
+   
 }

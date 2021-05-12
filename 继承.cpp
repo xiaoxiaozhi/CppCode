@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
-//1.·ÃÎÊÈ¨ÏÞ£ºÅÉÉúÀà¿ÉÒÔ·ÃÎÊ»ùÀàÖÐËùÓÐµÄ·ÇË½ÓÐ³ÉÔ±¡£Òò´Ë»ùÀà³ÉÔ±Èç¹û²»Ïë±»ÅÉÉúÀàµÄ³ÉÔ±º¯Êý·ÃÎÊ£¬ÔòÓ¦ÔÚ»ùÀàÖÐÉùÃ÷Îª private¡£
-//2.»ùÀàµÄ¹¹Ôìº¯Êý¡¢Îö¹¹º¯ÊýºÍ¿½±´¹¹Ôìº¯Êý¡¢»ùÀàµÄÖØÔØÔËËã·û¡¢»ùÀàµÄÓÑÔªº¯Êý¡£
+//1.è®¿é—®æƒé™ï¼šæ´¾ç”Ÿç±»å¯ä»¥è®¿é—®åŸºç±»ä¸­æ‰€æœ‰çš„éžç§æœ‰æˆå‘˜ã€‚å› æ­¤åŸºç±»æˆå‘˜å¦‚æžœä¸æƒ³è¢«æ´¾ç”Ÿç±»çš„æˆå‘˜å‡½æ•°è®¿é—®ï¼Œåˆ™åº”åœ¨åŸºç±»ä¸­å£°æ˜Žä¸º privateã€‚
+//2.åŸºç±»çš„æž„é€ å‡½æ•°ã€æžæž„å‡½æ•°å’Œæ‹·è´æž„é€ å‡½æ•°ã€åŸºç±»çš„é‡è½½è¿ç®—ç¬¦ã€åŸºç±»çš„å‹å…ƒå‡½æ•°ã€‚
 class A
 {
 public:
@@ -9,19 +9,44 @@ public:
     {
         cout << "creat A " << endl;
     }
-
+    void fun1()
+    {
+        cout << "this is parent" << endl;
+    }
 };
-class B : virtual public A //·ÃÎÊÐÞÊÎ·ûÄ¬ÈÏÊÇprivate£¬ÎÒÃÇ¼¸ºõ²»Ê¹ÓÃ protected »ò private ¼Ì³Ð£¬£¬Í¨³£Ê¹ÓÃ public ¼Ì³Ð
+class B : virtual public A //è®¿é—®ä¿®é¥°ç¬¦é»˜è®¤æ˜¯privateï¼Œæˆ‘ä»¬å‡ ä¹Žä¸ä½¿ç”¨ protected æˆ– private ç»§æ‰¿ï¼Œï¼Œé€šå¸¸ä½¿ç”¨ public ç»§æ‰¿
 {
+public:
+    B()
+    {
+        cout << "creat B " << endl;
+    }
+    void fun1()
+    {
+        cout << "this is B" << endl;
+    }
 };
-class C : virtual public A //Ðé¼Ì³Ð:ÎªÁË½â¾ö¶à¼Ì³ÐÊ±µÄÃüÃû³åÍ»ºÍÈßÓàÊý¾ÝÎÊÌâ£¬C++ Ìá³öÁËÐé¼Ì³Ð£¬Ê¹µÃÔÚÅÉÉúÀàÖÐÖ»±£Áô×îÉÏÃæ»ùÀàµÄ³ÉÔ±A¡£
+class C : virtual public A //è™šç»§æ‰¿:ä¸ºäº†è§£å†³å¤šç»§æ‰¿æ—¶çš„å‘½åå†²çªå’Œå†—ä½™æ•°æ®é—®é¢˜ï¼ŒC++ æå‡ºäº†è™šç»§æ‰¿ï¼Œä½¿å¾—åœ¨æ´¾ç”Ÿç±»ä¸­åªä¿ç•™æœ€ä¸Šé¢åŸºç±»çš„æˆå‘˜Aã€‚
 {
+public:
+    void fun1()
+    {
+        cout << "this is C" << endl;
+    }
 };
 class D : public B, public C
 {
+public:
+    void fun1()
+    {
+        cout << "this is D" << endl;
+    }
 };
 int main()
 {
-    D d; //A´´½¨ÁËÁ½±é£¬ÓÃÐé¼Ì³Ð±ÜÃâ
+    D d; //Aåˆ›å»ºäº†ä¸¤éï¼Œç”¨è™šç»§æ‰¿é¿å…
+    d.fun1();
+    A *a = &d;
+    a->fun1();
     return 0;
 }
