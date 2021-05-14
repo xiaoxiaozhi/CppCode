@@ -13,7 +13,7 @@ int main()
     cout << "p指向内存-->内容" << *p << endl; //解引用
     //3.指针所占字节:32位占4个字节 64位操作系统占8字节
     cout << "指针P占" << sizeof(p) << "字节" << endl;
-     cout << "指针ptr占" << sizeof(ptr) << "字节" << endl;
+    cout << "指针ptr占" << sizeof(ptr) << "字节" << endl;
     cout << "int类型指针占" << sizeof(int *) << "字节" << endl;
     //4.空指针。暂时不知道指向哪里 内存0~255 不允许用户访问
     int *p2 = NULL;
