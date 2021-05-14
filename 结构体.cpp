@@ -16,10 +16,10 @@ int main()
 {
     //1.声明结构体变量:前面最好加上struct，也可以省略
     Student s;
-    struct Student s1 = {30, "张三", 100};
+    struct Student s1 = {30, "123", 100};
 
     Student *s2 = &s1;
-    cout << "s.age=" << s.age << "\ts1.name=" << s1.name << endl;
+    printf("s.age=%d\ts1.name=%s\n", s1.age, &s1.name);
     cout << "s1.age=" << s1.age << endl;
     cout << "s2->age=" << s2->age << endl;
     ss.play();
