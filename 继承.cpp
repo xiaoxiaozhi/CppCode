@@ -7,7 +7,7 @@ class A
 public:
     A()
     {
-        cout << "creat A " << endl;
+        cout << "creat A    " << endl;
     }
     void fun1()
     {
