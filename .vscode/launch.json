@@ -1,17 +1,23 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    //最关键的两个字段
+    //preLaunchTask:生成调试文件（本例是main.exe)只能对单个cpp文件生成调试文件,当main.cpp 引入了其它cpp文件再点启动调试就会报错，
+    //              如果要编译多文件就不能再用preLaunchTask了，我们要把这个关键字注释掉，用g++生成可调试文件，g++ .\XX1.cpp .\XX2.cpp -o out.exe
+    //              然后program设置成out.exe的路径
+    //program:生成调试文件存放位置
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "g++.exe - 生成和调试活动文件",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            // "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",//单文件
+            // "program": "${workspaceFolder}\\build\\out.exe",//手动指定g++生成文件位置
+            // "program": "${fileDirname}\\out.exe",//通过cmake--->Makefile--->可执行文件
+            "program": "${workspaceFolder}\\build\\out.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}",//当前项目的路径 
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -23,7 +29,8 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: g++.exe build active file"
+            // "preLaunchTask": "C/C++: g++.exe build active file"
+            "preLaunchTask": "Build"
         }
     ]
 }

@@ -1,4 +1,5 @@
 {
+    "version": "2.0.0",
     "tasks": [
         {
             "type": "shell",
@@ -6,9 +7,10 @@
             "command": "C:\\Program Files\\mingw64\\bin\\g++.exe",
             "args": [
                 "-g",
-                "${file}",
+                "main.cpp",
+                "swap.cpp",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${workspaceFolder}\\out.exe"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -16,11 +18,60 @@
             "problemMatcher": [
                 "$gcc"
             ],
+            "group": "build"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe 生成活动文件",
+            "command": "C:/Program Files/mingw64/bin/gcc.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "C:/Program Files/mingw64/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "detail": "调试器生成的任务。"
+        },
+        {
+            "type": "shell",
+            "label": "cmake",
+            "command": "cmake",
+            "args":[".."],
+            "options": {
+                "cwd": "${workspaceFolder}\\build"
+            },
+        },
+        {
+            
+            "label": "make",
+            "command": "mingw32-make.exe",
+            "options": {
+                "cwd": "${workspaceFolder}\\build"
+            },
+            "group":{
+                "kind":"build",
+                "isDefault":true
+            },
+            "args":[]
+        },
+        {
+            "label": "Build",
+            "dependsOn":[
+                "cmake",
+                "make"
+            ]
         }
     ],
-    "version": "2.0.0"
+  
 }
