@@ -1,5 +1,6 @@
 #include <iostream>
 using namespace std;
+//1. 函数模板
 //函数模板-------------------------------------------------------------------------------------------------------------
 template <typename T>   //template模板声明关键字，声明使用模板,并定义T是一个模板类型 多参数用，号隔开<typename T,typenameE >
 void mySwap(T &a, T &b) //函数模板

@@ -11,10 +11,10 @@
             "name": "g++.exe - 生成和调试活动文件",
             "type": "cppdbg",
             "request": "launch",
-            // "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",//单文件
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",//单文件
             // "program": "${workspaceFolder}\\build\\out.exe",//手动指定g++生成文件位置
             // "program": "${fileDirname}\\out.exe",//通过cmake--->Makefile--->可执行文件
-            "program": "${workspaceFolder}\\build\\out.exe",
+            // "program": "${workspaceFolder}\\build\\out.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",//当前项目的路径 
@@ -29,8 +29,8 @@
                     "ignoreFailures": true
                 }
             ],
-            // "preLaunchTask": "C/C++: g++.exe build active file"
-            "preLaunchTask": "Build"
+            "preLaunchTask": "g++"
+            // "preLaunchTask": "Build"
         }
     ]
 }

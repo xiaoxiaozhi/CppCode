@@ -18,6 +18,7 @@ using namespace std;
 //  点击菜单栏的Terminal->config Tasks 选择C/C++:g++.exe build active task 
 //  输入 修改编译参数为 "main.cpp", "swap.cpp",然后替换lanuch.json的 "preLaunchTask": "刚才创建的task的label"
 //5.自定义preLaunchTask(cmake)
+//  具体看Build任务， build文件夹必须由vscode的camke插件生成否则，debug不起作用
 //
 
 int main(int argc,char **argv)
