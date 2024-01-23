@@ -8,19 +8,30 @@ using namespace std;
 // 2. 数据类型
 //    2.1 short(短整型)	2字节 int 4字节 long Windows为4字节，Linux为4字节(32位)，跟int好像没区别，long long 8字节
 //    2.2 sizeof关键字 sizeof( 数据类型 / 变量)
-//    2.3 float	    4字节	7位有效数字 
+//    2.3 float	    4字节	7位有效数字
 //        double	8字节	15～16位有效数字
 //        有效数字是指在一个数中，从该数的第一个非零数字起，直到末尾数字止的数字称为有效数字
 //        浮点数默认都是 double类型  0.1f加f转为单精度类型
 //    2.4 字符型char ch = 'a';用单引号将字符括起来，不要用双引号，只能有一个字符,字符型变量只占有1字节
 //    2.5 转义字符用于表示不能显示出来的字符 \t \n \\等等
-//    2.6 字符串，有两种风格 
+//    2.6 字符串，有两种风格
 //        C     风格 char 变量名[] = "字符串值"
 //        C++   风格  string 变量名 = "字符串值" 注意要引入 #include <string.h>
 //    2.7 布尔类型：bool类型只有两个值： 占用一个字节
 //        true --- 真（本质是1）
 //        false --- 假（本质是0）
-//    
+//    2.8 一维数组
+//        数据类型 数组名[ 数组长度 ];
+//        数据类型 数组名[ 数组长度 ] = { 值1，值2 ...};
+//        数据类型 数组名[ ] = { 值1，值2 ...};
+//        实践发现 (int)&arr[0] 会报错，int* 转 int 会丢失精度，sizeOf(&arr[0])发现是8字节，应该转成long long或者使用printf函数
+//    2.9 二维数组
+//        数据类型 数组名[ 行数 ][ 列数 ];
+//        数据类型 数组名[ 行数 ][ 列数 ] = { {数据1，数据2 } ，{数据3，数据4 } };
+//        数据类型 数组名[ 行数 ][ 列数 ] = { 数据1，数据2，数据3，数据4};
+//        数据类型 数组名[ ][ 列数 ] = { 数据1，数据2，数据3，数据4};
+//
+//
 
 // 1.1
 #define day 7
@@ -35,21 +46,40 @@ int main()
     cout << "sizeOf---long " << sizeof(long) << endl;
     cout << "sizeOf---long long " << sizeof(long long) << endl;
     cout << "sizeOf---int变量 " << sizeof(cconst) << endl;
-    //2.3 
-    cout<<"科学计数法---"<<2e2<<endl;// e * 10 ^ 2 
-    cout<<"科学计数法---"<<2e-2<<endl;// e * 0.1 ^ 2 
-    //2.4
+    // 2.3
+    cout << "科学计数法---" << 2e2 << endl;  // e * 10 ^ 2
+    cout << "科学计数法---" << 2e-2 << endl; // e * 0.1 ^ 2
+    // 2.4
     char ch = 97;
-    cout<<"直接用ASCII码给字符型变量赋值---"<<ch<<endl;
-    //2.6 
-    char str1[] = "hello world";//C风格要用 双引号括起来
-	cout<<"C风格字符串---" << str1 << endl;
+    cout << "直接用ASCII码给字符型变量赋值---" << ch << endl;
+    // 2.6
+    char str1[] = "hello world"; // C风格要用 双引号括起来
+    cout << "C风格字符串---" << str1 << endl;
     string str = "hello world";
-	cout <<"C++风格字符串---" <<str << endl;
-
-
-
-
+    cout << "C++风格字符串---" << str << endl;
+    // 2.8
+    int arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    cout << "整个数组所占内存空间为： " << sizeof(arr) << endl;
+    cout << "每个元素所占内存空间为： " << sizeof(arr[0]) << endl;
+    cout << "数组的元素个数为： " << sizeof(arr) / sizeof(arr[0]) << endl;
+    // 、可以通过数组名获取到数组首地址
+    // printf("数组首地址为：%d\n", arr);
+    cout << "数组首地址为：" << (long long)arr << endl;
+    cout << "数组中第一个元素地址为： " << (long long)&arr[0] << endl;
+    cout << "数组中第二个元素地址为： " << (long long)&arr[1] << endl;
+    // 2.9 二维数组
+    int arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+    cout << "二维数组大小： " << sizeof(arr) << endl;
+    cout << "二维数组一行大小： " << sizeof(arr[0]) << endl;
+    cout << "二维数组元素大小： " << sizeof(arr[0][0]) << endl;
+    cout << "二维数组行数： " << sizeof(arr) / sizeof(arr[0]) << endl;
+    cout << "二维数组列数： " << sizeof(arr[0]) / sizeof(arr[0][0]) << endl;
+    // 地址
+    cout << "二维数组首地址：" << arr << endl;
+    cout << "二维数组第一行地址：" << arr[0] << endl;
+    cout << "二维数组第二行地址：" << arr[1] << endl;
+    cout << "二维数组第一个元素地址：" << &arr[0][0] << endl;
+    cout << "二维数组第二个元素地址：" << &arr[0][1] << endl;
 
     // 引用-------------------------------------------------------------
     int a = 1;  // 与a相比下面 两个变量属于复合类型（类就修饰符+变量名）
