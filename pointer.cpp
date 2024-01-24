@@ -11,6 +11,8 @@ using namespace std;
  *    int类型数组 指针+1 0x61fda0第一个元素地址 0x61fda4第二个元素地址
  *    比较特别的是字符型数组，cout << strp << " " << strp + 1 << endl; 打印地址就是打印字符串，
  *    打印strp从第一个元素开始的字符串，打印 stp+1 就是打印从第二个元素开始的字符串
+ *    看网上的回答是 输出流被重载过了，正常来说应该输出地址，在vscode输出的是字符串
+ *    https://www.zhihu.com/question/52252124
  *
  */
 int main()
@@ -44,8 +46,8 @@ int main()
     cout << "指针访问第二个元素： " << *(pp + 1) << endl;
     char str[] = "hello word";
     char *strp = str;
-    cout << *strp << " " << *(strp + 1) << endl; // 为什么指针+1
-    cout << strp << " " << strp + 1 << endl;// 为什么不打印地址而是字符串？？？
+    cout << *strp << "---" << *(strp + 1) << endl; // 为什么指针+1
+    cout << strp << "---" << strp + 1 << endl;// 为什么不打印地址而是字符串？？？
     bool bArray[] = {true, false};
     bool *bArrayP = bArray;
     cout << bArrayP << " " << bArrayP + 1 << endl;
