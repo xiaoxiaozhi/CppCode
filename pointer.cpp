@@ -13,8 +13,11 @@ using namespace std;
  *    打印strp从第一个元素开始的字符串，打印 stp+1 就是打印从第二个元素开始的字符串
  *    看网上的回答是 输出流被重载过了，正常来说应该输出地址，在vscode输出的是字符串
  *    https://www.zhihu.com/question/52252124
+ * 8. 指针和函数
+ *    利用指针作函数参数，可以修改实参的值
  *
  */
+void swap2(int * p1, int *p2);
 int main()
 {
     // 1.指针定义,两种方式
@@ -52,4 +55,18 @@ int main()
     bool *bArrayP = bArray;
     cout << bArrayP << " " << bArrayP + 1 << endl;
     cout << pp << " " << pp + 1 << endl;
+    //8.
+    int aa = 1;
+	int c = 2;
+	swap2(&aa, &c); //地址传递会改变实参
+	cout << "aa = " << aa << endl;
+	cout << "c = " << c << endl;
+
+}
+//地址传递
+void swap2(int * p1, int *p2)
+{
+	int temp = *p1;
+	*p1 = *p2;
+	*p2 = temp;
 }
