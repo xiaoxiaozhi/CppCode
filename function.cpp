@@ -13,6 +13,16 @@ using namespace std;
  *   创建后缀名为.cpp的源文件
  *   在头文件中写函数的声明
  *   在源文件中写函数的定义
+ * 3.值传递、地址传递、引用传递  
+ *   后两者效果一样都能改变实参，
+ *   void mySwap01(int a, int b)   值传递
+ *   void mySwap02(int* a, int* b) 地址传递
+ *   void mySwap03(int& a, int& b) 引用传递
+ * 4.引用作为函数返回值
+ *   int& test02(){return 变量}  返回值类型& 函数体返回变量  
+ * 
+ *   
+ * 
  *
  *
  *
@@ -20,6 +30,7 @@ using namespace std;
 // 改变 传递值的 两种参数
 void reset(int *p); // 指针形参
 void reset(int &p); // 传引用参数
+
 int main()
 {
     int a = 6;

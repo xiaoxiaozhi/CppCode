@@ -17,6 +17,8 @@ using namespace std;
  * 3. 引用
  *    引用的作用就是给变量起个别名 数据类型 &别名 = 原名  给变量起个别名，通过别名也可以操作这块内存
  *    引用必须要声明处初始化，一旦初始化就不能改变，引用的本质在c++内部实现是一个指针常量. int* const ref = &a;
+ *    引用不可以直接赋值，这样写是错误的  int& ref = 10; 换种写法就可以 cont int& ref = 10；实际编译器优化过 int temp = 10;int& ref = temp;
+ *    常量引用，主要用来修饰形参，防止误操作
  *
  */
 // 全局变量
@@ -27,6 +29,12 @@ const int c_g_a = 10;
 const int c_g_b = 10;
 int *func();
 int *func1();
+// 3. 常量引用
+void showValue(const int &v)
+{
+    // v += 10;
+    cout << v << endl;
+}
 int main()
 {
 
@@ -73,6 +81,7 @@ int main()
     bb = 100;
     cout << "a = " << aa << endl;
     cout << "b = " << bb << endl;
+    showValue(20);
 
     return 0;
 }
