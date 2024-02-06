@@ -20,6 +20,8 @@ using namespace std;
  *   void mySwap03(int& a, int& b) 引用传递
  * 4.引用作为函数返回值
  *   int& test02(){return 变量}  返回值类型& 函数体返回变量  
+ * 5.默认参数
+ *   
  * 
  *   
  * 
@@ -30,6 +32,10 @@ using namespace std;
 // 改变 传递值的 两种参数
 void reset(int *p); // 指针形参
 void reset(int &p); // 传引用参数
+int func(int a, int b = 10, int c = 10) {
+	return a + b + c;
+}
+
 
 int main()
 {
