@@ -30,7 +30,7 @@ int main(int argc,char **argv)
     cout<<"val2 = "<<val2<<endl;
     swap(val1,val2);
     cout<<"after"<<endl;
-    // cout<<"val1 = "<<val1<<endl;
-    // cout<<"val2 = "<<val2<<endl;
+    cout<<"val1 = 几百块"<<val1<<endl;
+    cout<<"val2 = "<<val2<<endl;
     return 0;
 }

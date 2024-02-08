@@ -1,5 +1,12 @@
 #include <iostream>
 using namespace std;
+/**
+ * 1. struct和class区别
+ *    在C++中 struct和class唯一的区别就在于 默认的访问权限不同,struct 默认权限为公共、class 默认权限为私有
+ * 2.
+*/
+
+
 //1.类访问修饰符
 //2.拷贝构造函数
 //3.友元函数

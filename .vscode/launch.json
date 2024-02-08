@@ -1,9 +1,4 @@
 {
-    //最关键的两个字段
-    //preLaunchTask:生成调试文件（本例是main.exe)只能对单个cpp文件生成调试文件,当main.cpp 引入了其它cpp文件再点启动调试就会报错，
-    //              如果要编译多文件就不能再用preLaunchTask了，我们要把这个关键字注释掉，用g++生成可调试文件，g++ .\XX1.cpp .\XX2.cpp -o out.exe
-    //              然后program设置成out.exe的路径
-    //program:生成调试文件存放位置
     "version": "0.2.0",
     "configurations": [
         
@@ -11,7 +6,7 @@
             "name": "g++.exe - 生成和调试活动文件",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",//单文件
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
             // "program": "${workspaceFolder}\\build\\out.exe",//手动指定g++生成文件位置
             // "program": "${fileDirname}\\out.exe",//通过cmake--->Makefile--->可执行文件
             // "program": "${workspaceFolder}\\build\\out.exe",
@@ -29,8 +24,10 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "g++"
-            // "preLaunchTask": "Build"
+            //preLaunchTask后面跟的值是一个名字定义在，tasks.json lable标签，再看command和args，就会发现这是一条g++编译文件的命令 
+            "preLaunchTask": "C/C++: g++.exe build active file"
+            // "preLaunchTask": "g++"
+            // "preLaunchTask": "Build"//
         }
     ]
 }
