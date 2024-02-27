@@ -51,6 +51,7 @@ int main()
     char *strp = str;
     cout << *strp << "---" << *(strp + 1) << endl; // 为什么指针+1
     cout << strp << "---" << strp + 1 << endl;// 为什么不打印地址而是字符串？？？
+    printf("strp---%s\n",strp);//打印C风格类型的字符串
     bool bArray[] = {true, false};
     bool *bArrayP = bArray;
     cout << bArrayP << " " << bArrayP + 1 << endl;

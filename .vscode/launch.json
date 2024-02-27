@@ -25,9 +25,9 @@
                 }
             ],
             //preLaunchTask后面跟的值是一个名字定义在，tasks.json lable标签，再看command和args，就会发现这是一条g++编译文件的命令 
-            "preLaunchTask": "C/C++: g++.exe build active file"
-            // "preLaunchTask": "g++"
-            // "preLaunchTask": "Build"//
+            // "preLaunchTask": "C/C++: g++.exe build active file"
+            "preLaunchTask": "g++"
+            // "preLaunchTask": "shell"//
         }
     ]
 }

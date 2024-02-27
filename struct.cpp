@@ -13,10 +13,7 @@ using namespace std;
  * 4.结构体嵌套
  * 5.将结构体作为函数参数
  *   5.1 const修饰形参防止修改
- * 
- *   
- *   
- *   
+ * TODO 搜索了下C++支持结构体设置访问权限，但是我设置private之后马上报错，报错信息提到了gcc，可我用的是g++编译的，这是为什么呢？？？ 
  */
 struct student
 {
@@ -73,7 +70,5 @@ int main()
 	struct teacher t1;
 	t1.stu = {"张三",18,80 };
 	cout<<"老师的学生---"<<t1.stu.name<<" 学生年龄"<<t1.stu.age<<endl;
-
-
 	return 0;
 }

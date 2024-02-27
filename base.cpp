@@ -68,18 +68,18 @@ int main()
     cout << "数组中第一个元素地址为： " << (long long)&arr[0] << endl;
     cout << "数组中第二个元素地址为： " << (long long)&arr[1] << endl;
     // 2.9 二维数组
-    int arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
-    cout << "二维数组大小： " << sizeof(arr) << endl;
-    cout << "二维数组一行大小： " << sizeof(arr[0]) << endl;
-    cout << "二维数组元素大小： " << sizeof(arr[0][0]) << endl;
-    cout << "二维数组行数： " << sizeof(arr) / sizeof(arr[0]) << endl;
-    cout << "二维数组列数： " << sizeof(arr[0]) / sizeof(arr[0][0]) << endl;
+    int arr1[2][3] = {{1, 2, 3}, {4, 5, 6}};
+    cout << "二维数组大小： " << sizeof(arr1) << endl;
+    cout << "二维数组一行大小： " << sizeof(arr1[0]) << endl;
+    cout << "二维数组元素大小： " << sizeof(arr1[0][0]) << endl;
+    cout << "二维数组行数： " << sizeof(arr1) / sizeof(arr1[0]) << endl;
+    cout << "二维数组列数： " << sizeof(arr1[0]) / sizeof(arr1[0][0]) << endl;
     // 地址
-    cout << "二维数组首地址：" << arr << endl;
-    cout << "二维数组第一行地址：" << arr[0] << endl;
-    cout << "二维数组第二行地址：" << arr[1] << endl;
-    cout << "二维数组第一个元素地址：" << &arr[0][0] << endl;
-    cout << "二维数组第二个元素地址：" << &arr[0][1] << endl;
+    cout << "二维数组首地址：" << arr1 << endl;
+    cout << "二维数组第一行地址：" << arr1[0] << endl;
+    cout << "二维数组第二行地址：" << arr1[1] << endl;
+    cout << "二维数组第一个元素地址：" << &arr1[0][0] << endl;
+    cout << "二维数组第二个元素地址：" << &arr1[0][1] << endl;
 
     // 引用-------------------------------------------------------------
     int a = 1;  // 与a相比下面 两个变量属于复合类型（类就修饰符+变量名）
