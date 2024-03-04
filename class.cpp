@@ -12,7 +12,7 @@ using namespace std;
  *    析构函数语法：~类名(){} 析构函数不可以有参数，因此不可以发生重载
  *    3.1 构造函数种类
  *        有参构造和无参构造、普通构造和拷贝构造
- *    3.2 调用构造函数
+ *    3.2 构造函数调用方式
  *        Box b 调用无参构造函数  Box b(...)括号法调用有参构造函数 Box b = Box(...)显示法调用有参构造函数，括号法就是显示法 Box b=10 隐式法调用有参构造函数
  *        注意调用无参构造函数不要加小括号 Box b() 这样会让编译器认为这是在声明一个方法
  *    3.3 匿名对象
@@ -48,15 +48,144 @@ using namespace std;
  *    成员变量、成员函数是分开存储的
  *    sizeof 匿名对象 空间都是1字节，这是为什么？？？？
  * 9. this指针
+ *    this指针的本质是一个指针常量，指针的指向不可修改
  *    this指针是隐含每一个非静态成员函数内的一种指针，this指针不需要定义，直接使用即可
  *    空指针调用成员函数，调用showAttr时候报错了，这是因为name完整调用形态是this->name ,由于对象指向空指针，所以这里报错了
  *    showFuction就没有报错，它没有使用this
+ * 10.const修饰成员函数
+ *    成员函数后加const后我们称为这个函数为常函数、常函数内不可以修改成员属性、成员属性声明时加关键字mutable后，在常函数中依然可以修改
  *
+ *    10.1 增加mutable关键字，让常函数修改普通变量
+ *    10.2 常对象：声明对象前加const称该对象为常对象、常对象只能调用常函数
+ *         必须显示调用构造函数，否则报错
+ *         ConstClass const cc = ConstClass(); 也可以  const ConstClass cc = ConstClass(); 二者等价
+ * 11.友元
+ *    11.1 全局函数做友元，在类最上面 friend 全局函数声明 friend void googGay(Building &building);
+ *    11.2 类做友元 ，在类最上面 friend 类
+ *    11.3 其他类成员函数做友元
+ * 12.运算符重载
+ *    对于内置数据类型编译器知道怎么使用运算符，但是对自定义类型怎么使用运算符呢？这时候就要用到运算符重载，键盘敲单词 operater(编译器会自动补全一大堆运算符)
+ *    成员函数重载    Rectangle operator+(const Rectangle &rectangle)
+ *    全局函数重载    Rectangle operator+(const Rectangle &r1, const Rectangle &r2)
+ *    注意const不加会报错
+ * 13.继承
+ *    减少重复代码，子类也称为派生类，父类也叫基类。继承语法   class 子类 : 继承方式(public private protected) 父类
+ *    13.1继承方式：public公共继承，继承到父类的 public和protected属性方法变成子类的公共和保护
+ *             protected保护继承，继承到父类的 public和protected属性方法到了子类变成子类的保护权限
+ *             private私有继承，父类中public和protected到了子类都变成子类的私有权限，子类可以访问这些改变了权限的方法和属性
+ *    父类私有权限的属性和方法，到了子类还是私有的。子类访问不到父类隐私属性和方法
+ *    保护权限类外访问不到
+ *    13.2继承中的对象内存模型：父类3个int属性，子类1个int属性，子类对象总共占16字节。父类所有的非静态属性都被子类继承了，
+ *        访问不到父类私有属性是因为被编译器隐藏了
+ *    13.3继承中构造函数和析构函数执行顺序 Base无参构造函数、Son无参构造函数、Son析构函数、Base析构函数。 先调用父类构造再调用子类，回收先调用子类析构，再调用父类
+ *        如果父类构造和析构都是私有属性，那么子类创建和销毁时就无法调用。注意父类构造和析构不能是私有
+ *    13.4继承中处理同名：子类中同名成员直接访问，父类中同名成员加作用域访问。 s.m_A和s.Base::m_A。函数的调用方式和属性一致
+ *        如果父类同名函数有重载出现，子类调用重载函数出错，给我的感觉是，对于重名，子类.属性和方法 就是调用子类的，子类.父类::属性和方法就是调用父类的，用作用域来区分同名
+ *    13.5同名静态成员变量：同上  通过类名访问静态变量 Son::m_A  Son::Base::m_A
+ *    13.6多继承语法：允许有多个父类  class 子类 :继承方式 父类1 ， 继承方式 父类2。由于容易引发同名问题，开发中不建议多继承
+ *    如果不重名，子类可以直接调用父类属性和方法,不用加作用域
+ *    13.7 菱形继承 
  *
+ * 、
  *
  *
  *
  */
+class Base
+{
+public:
+    int m_AA = 10;
+    int m_A = 100;
+
+protected:
+    int m_B;
+    Base()
+    {
+        cout << "Base无参构造函数" << endl;
+    }
+    ~Base()
+    {
+        cout << "Base析构函数" << endl;
+    }
+
+private: // 私有成员只是被隐藏了，但是还是会继承
+    int m_C;
+};
+
+// 公共继承
+class Son : public Base
+{
+public:
+    Son()
+    {
+        cout << "Son无参构造函数" << endl;
+    }
+    ~Son()
+    {
+        cout << "Son析构函数" << endl;
+    }
+    int m_A = 200;
+    int m_D;
+};
+class GoodGay;
+class Building;
+class GoodGayA
+{
+public:
+    void visit(Building &building); // Building类还没有定义这时候只能接收一个Building对象而不能自己创建，感觉可以先声明，里面的函数在之后实现
+};
+class Building
+{
+    // 11.1 告诉编译器 goodGay全局函数 是 Building类的好朋友，可以访问类中的私有内容
+    friend void googGay(Building &building);
+    // 11.2
+    friend class GoodGay;
+    // 11.3
+    friend void GoodGayA::visit(Building &building); // 在类外声明
+    // 11.友元
+public:
+    Building() : settingRoom("客厅"), bedRoom("卧室") {}
+    string settingRoom;
+
+private:
+    string bedRoom;
+};
+// 全局函数
+void googGay(Building &building)
+{
+    cout << "好基友函数正在访问私有属性---" << building.bedRoom << endl;
+}
+class GoodGay
+{
+    Building building;
+
+public:
+    void visit()
+    {
+        cout << "好基友GoodGay类正在访问私有属性---" << building.bedRoom << endl;
+    }
+};
+
+void GoodGayA::visit(Building &building)
+{
+    cout << "好基友GoodGayA类正在访问私有属性---" << building.bedRoom << endl;
+}
+
+class ConstClass
+{
+public:
+    // 10.const修改成员函数
+    void doWork() const
+    {
+        // this->m_A;//this指针的本质是一个指针常量,指针的指向不可修改 但是值可以修改。常函数实际上又给函数体内的this加了一个const，
+        // 让this指针变成，指针常量+常量指针，这样值也不能修改
+        // m_A = 10;//常函数不可以修改成员属性
+        m_B = 10; // 10.1
+        cout << "do something" << endl;
+    }
+    int m_A;
+    mutable int m_B;
+};
 class NullPoint
 {
 public:
@@ -66,6 +195,10 @@ public:
     }
     void showAttr()
     {
+        if (this == NULL)
+        {
+            return; // 添加判空增强健壮性
+        }
         cout << "showAttr---" << name << endl;
     }
     string name;
@@ -120,13 +253,13 @@ public:
 
 class Rectangle
 {
+
+public:
     int width;
     int *height;
     // 6. 类对象作为类成员
     Triangle t;
     // Apple a;//对于没有默认构造函数的成员我在下面写了 赋值构造函数还是不行，和视频讲的不一样
-
-public:
     Rectangle()
     {
         cout << "Rectangle无参构造函数" << endl;
@@ -159,7 +292,29 @@ public:
         }
         cout << "Rectangle析构函数" << endl;
     }
+    // 12.成员函数运算符重载
+    Rectangle operator+(const Rectangle &rectangle)
+    {
+        Rectangle r;
+        r.width = this->width + rectangle.width;
+        // r.height = new int(*height + *rectangle.height);//height是指针，没有初始化就没法使用，指针初始化赋值地址、直接传值会报错
+        r.height = new int(*height + *rectangle.height);
+        return r;
+    }
+    void display()
+    {
+        cout << "width---" << this->width << " height---" << *this->height << endl;
+    }
 };
+// 12.全局函数运算符重载
+Rectangle operator+(const Rectangle &r1, const Rectangle &r2)
+{
+    Rectangle r;
+    r.width = r1.width + r2.width;
+    // r.height = new int(*height + *rectangle.height);//TODO 为什么一定要创建堆 对象，两个值相加怎么不行
+    r.height = new int(*r1.height + *r2.height);
+    return r;
+}
 
 class Box
 {
@@ -263,10 +418,13 @@ int main()
     Box b5();              // 默认构造函数不要加括号，编译器会认为这是在声明一个方法
     Box bb(100, 101, 102); // 有参构造函数
     Box bbb(b);            // 拷贝构造函数
-    // 3.2 调用构造函数
-    Box b2;         // 显示法调用午餐构造函数
-    Box b3 = Box(); // 显示法、括号法 调用无参构造函数
-    Box b4 = b;     // 隐式法调用有参构造函数，这里调用的是拷贝构造函数
+    // 3.2 构造函数调用方式
+    Box b1(100, 101, 102); // 括号法
+    // Box b11();          // 无参构造函数不能用括号法，会被当做方法声明
+    Box b2 = Box(b1); // 显示法 调用无参构造函数
+    Box b3 = Box();   // 显示法 调用无参构造函数
+
+    Box b4 = b; // 隐式法调用有参构造函数，这里调用的是拷贝构造函数
     // 3.2 匿名对象
     Box(); // 匿名对象，没有变量名，执行完后会被马上回收
     cout << "-----拷贝构造函数调用时机-----" << endl;
@@ -293,10 +451,26 @@ int main()
     // 9.this指针
     NullPoint *np = NULL;
     np->showFuction();
-    // np->showAttr();//该方法使用了this 又因为这里的this是空指针所以报错
+    np->showAttr(); // 该方法使用了this 又因为这里的this是空指针所以报错，然后加个判空增加程序健壮性
+    // 10.2 常对象
+    ConstClass const cc = ConstClass();
+    cc.m_B = 100;
+    cout << "常对象修改mutable变量---" << cc.m_B << endl;
+    // 11.1 全局函数做友元
+    Building build;
+    googGay(build);
+    GoodGay().visit();       // 11.2
+    GoodGayA().visit(build); // 11.3
+    // 12。运算符重载
+    Rectangle rr = Rectangle(10, 10) + Rectangle(20, 20);
+    rr.display();
+    // 13.2 继承的内存模型
+    Son s;
+    cout << "子类的大小是多少---" << sizeof(s) << endl;   //
+                                                          // 13.4继承中处理同名
+    cout << "访问子类同名属性---" << s.m_A << endl;       //
+    cout << "访问父类同名属性---" << s.Base::m_A << endl; //
 
-
-    
     // cout << "Inital Stage Count: " << Box::getCount() << endl; // 静态成员函数即使在类对象不存在的情况下也能被调用，静态函数只要使用类名加范围解析运算符 :: 就可以访问。
     // Box box;                                                   // 声明一个对象,如果默认构造函数只声明不定义会报错
     // Box copy = box;                                            // 调用拷贝构造函数
