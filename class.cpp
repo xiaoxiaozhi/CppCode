@@ -84,13 +84,121 @@ using namespace std;
  *    13.5同名静态成员变量：同上  通过类名访问静态变量 Son::m_A  Son::Base::m_A
  *    13.6多继承语法：允许有多个父类  class 子类 :继承方式 父类1 ， 继承方式 父类2。由于容易引发同名问题，开发中不建议多继承
  *    如果不重名，子类可以直接调用父类属性和方法,不用加作用域
- *    13.7 菱形继承 
- *
- * 、
- *
- *
- *
+ *    13.7 菱形继承
+ *    A--->(B,C)--->D   B,C继承了A，D又多继承了B,C。菱形继承会产生一个问题，比如age属性，A类存在一个age属性，B和C继承了A，所以B和C各自都有age属性
+ *    这时候D继承了B和C导致D有两份age。然后我们对age赋值，D.B::age=10  D.C::age=20 。D没有专属age，只能对父类的age赋值。怎么解决这个问题？
+ *    增加关键字 virtual 利用虚继承解决菱形问题，class B: virtual public A 、class C: virtual public A
+ *    看下图 菱形继承与菱形虚继承对象模型区别
+ *    http://m.qpic.cn/psc?/V54UN84b0OHfN43eIX713mRT5H07gkzM/bqQfVz5yrrGYSXMvKr.cqYyroh.Mij3fXp8kBg0aLAiyFE0*8y3Q9BIDO6ZZUdgWx8L9whheYhviz4co463V6FpZliYLlzm7JNAGfIhS*NE!/b&bo=Dwd5AgAAAAABB1M!&rf=viewer_4
+ *    vbptr 虚基类指针 指向vbtable(virtual base table).B和C通过虚继承，内部不再赋值A类的属性，而是生成了一个虚基类指针指向A类的属性。
+ *    这样就只有一份age。 D.B::age=10  D.C::age=20 修改的是同一份age。
+ * 14.多态
+ *    多态分为两类
+ *    静态多态: 函数重载 和 运算符重载属于静态多态，复用函数名，同一函数名不同参数参数
+ *    动态多态: 派生类和虚函数实现运行时多态
+ *    静态多态和动态多态区别：
+ *    静态多态的函数地址早绑定 - 编译阶段确定函数地址         void speak()
+ *    动态多态的函数地址晚绑定 - 运行阶段确定函数地址 virtual void speak()
+ *    多态 1.有继承关系 2.子类必须重写父类的虚方法
+ *    14.1 多态内部原理
+ *    virtual void speak() 虚函数会在类内部有一个生成一个四字节的指针 vfptr  virtual function pointer 虚函数指针指向虚函数表 vftable
+ *    如果子类重写了父类的虚函数，子类这样不叫重写虚函数void speak()，这样才叫  virtual void speak()。子类虚函数表的speak会替换成子类的speak虚函数
+ *    动态多态 Animal &animal =sheep; animal.speak; 调用的是小羊的speak animsl.speak();
+ *    14.2 纯虚函数和抽象类
+ *    在多态中，通常父类中虚函数的实现是毫无意义的，主要都是调用子类重写的内容因此可以将虚函数改为纯虚函数
+ *    纯虚函数语法：virtual 返回值类型 函数名 （参数列表）= 0 ; virtual void func()=0; vit当类中有了纯虚函数，这个类也称为抽象类
+ *    14.3 虚析构函数和纯析构函数
+ *    多态使用时，如果子类中有属性开辟到堆区，那么父类指针在释放时无法调用到子类的析构代码
+ *    解决方式：将父类中的析构函数改为虚析构或者纯虚析构
+ *    虚析构和纯虚析构共性：可以解决父类指针释放子类对象都需要有具体的函数实现
+ *    虚析构和纯虚析构区别：如果是纯虚析构，该类属于抽象类，无法实例化对象
+ *    虚析构语法：virtual ~类名(){}
+ *    纯虚析构语法：virtual ~类名() = 0; 类外再实现 类名::~类名(){}。纯虚析构有点麻烦类内声明一个纯虚析构，类外还要再实现
+ *    Fruit *f = new Cherry(); delete f;//只会调用fruit的析构函数，Fruit析构函数前加virtual变成虚析构之后，就可以调用子类Cherry的析构函数了
+ *    有个问题main函数中其他的 对象都没有调用delete最后都调用了析构函数，怎么到了虚析构函数，就要调用delete才能执行析构函数？？？
  */
+
+class Fruit
+{
+public:
+    virtual void func() = 0;
+    virtual ~Fruit()
+    {
+        cout << "水果调用了析构函数" << endl;
+    }
+    //使用纯虚析构效果相同
+    // virtual ~Fruit() = 0;
+};
+// Fruit::~Fruit(){}
+
+class Cherry : public Fruit
+{
+    int *hex;
+
+public:
+    Cherry()
+    {
+        hex = new int(10);
+    }
+    // 如果不覆写纯虚函数，Cherry也是一个抽象函数，下文 new Cherry()的就会报错，因为抽象类不能实例化
+    void func()
+    {
+        cout << "樱桃继承了纯虚函数" << endl;
+    }
+    ~Cherry()
+    {
+        cout << "樱桃调用了析构函数" << endl;
+        if (hex != NULL)
+        {
+            delete hex;
+            hex = NULL;
+        }
+    }
+};
+
+class Animal
+{
+public:
+    int age;
+    // 静态多态的函数地址早绑定 - 编译阶段确定函数地址
+    // 动态多态的函数地址晚绑定 - 运行阶段确定函数地址
+    virtual void speak()
+    {
+        cout << "动物在说话" << endl;
+    }
+};
+class Sheep : virtual public Animal
+{
+public:
+    void speak()
+    {
+        cout << "小羊在说话" << endl;
+    }
+};
+class Tuo : virtual public Animal
+{
+public:
+    void speak()
+    {
+        cout << "骆驼在说话" << endl;
+    }
+};
+// 我们希望传入什么对象，那么就调用什么对象的函数
+// 如果函数地址在编译阶段就能确定，那么静态联编
+// 如果函数地址在运行阶段才能确定，就是动态联编
+void doSpeak(Animal &animal)
+{
+    animal.speak();
+}
+// 13.7 菱形继承
+class SheepTuo : public Sheep, public Tuo
+{
+public:
+    void speak()
+    {
+        cout << "羊驼在说话" << endl;
+    }
+};
 class Base
 {
 public:
@@ -470,6 +578,19 @@ int main()
                                                           // 13.4继承中处理同名
     cout << "访问子类同名属性---" << s.m_A << endl;       //
     cout << "访问父类同名属性---" << s.Base::m_A << endl; //
+    // 13.7 菱形继承 ---虚继承
+    SheepTuo st;
+    st.age = 100; // 在虚基类继承前，该属性不能直接引用，因为不明确，要加上作用域
+    st.Sheep::age = 101;
+    st.Tuo::age = 102;
+    cout << "虚基类继承 age = " << st.age << endl; // st.Sheep::age 、 st.Tuo::age 、  st.age 引用的是一个值
+    // 14.多态
+    Sheep sheep;
+    doSpeak(sheep);
+    // 14.2 纯虚函数和抽象类
+    Fruit *f = new Cherry();
+    f->func();
+    delete f; // 只会调用fruit的析构函数，加virtual变成虚析构之后，就可以调用子类Cherry的析构函数了
 
     // cout << "Inital Stage Count: " << Box::getCount() << endl; // 静态成员函数即使在类对象不存在的情况下也能被调用，静态函数只要使用类名加范围解析运算符 :: 就可以访问。
     // Box box;                                                   // 声明一个对象,如果默认构造函数只声明不定义会报错
