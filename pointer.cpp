@@ -5,7 +5,7 @@ using namespace std;
  *    指针变量定义语法： 数据类型 * 指针名；  数据类型 * 指针名 = &变量
  * 2. 解引用
  *    指针变量可以通过" * "操作符，操作指针变量指向的内存空间，这个过程称为解引用
- * 7. 指针和数组
+ * 7. 指针和数组、字符串
  *    实践证明  指针+1 刚好是下一个元素的地址可能内部有处理，
  *    bool类型数组 指针+1 0x61fd93第一个元素地址 0x61fd94第二个元素地址
  *    int类型数组 指针+1 0x61fda0第一个元素地址 0x61fda4第二个元素地址
@@ -17,7 +17,7 @@ using namespace std;
  *    利用指针作函数参数，可以修改实参的值
  *
  */
-void swap2(int * p1, int *p2);
+void swap2(int *p1, int *p2);
 int main()
 {
     // 1.指针定义,两种方式
@@ -50,24 +50,25 @@ int main()
     char str[] = "hello word";
     char *strp = str;
     cout << *strp << "---" << *(strp + 1) << endl; // 为什么指针+1
-    cout << strp << "---" << strp + 1 << endl;// 为什么不打印地址而是字符串？？？
-    printf("strp---%s\n",strp);//打印C风格类型的字符串
+    cout << strp << "---" << strp + 1 << endl;     // 为什么不打印地址而是字符串？？？
+    printf("strp---%s\n", strp);                   // 打印C风格类型的字符串
+    const char *cc = "字符串";                     // 字符串是一个常量，直接赋值给char*会报警告，前面要加个const转成常量指针让他们类型一致
+    cout << "常量char指针引用字符串---" << cc << endl;
     bool bArray[] = {true, false};
     bool *bArrayP = bArray;
     cout << bArrayP << " " << bArrayP + 1 << endl;
     cout << pp << " " << pp + 1 << endl;
-    //8.
+    // 8.
     int aa = 1;
-	int c = 2;
-	swap2(&aa, &c); //地址传递会改变实参
-	cout << "aa = " << aa << endl;
-	cout << "c = " << c << endl;
-
+    int c = 2;
+    swap2(&aa, &c); // 地址传递会改变实参
+    cout << "aa = " << aa << endl;
+    cout << "c = " << c << endl;
 }
-//地址传递
-void swap2(int * p1, int *p2)
+// 地址传递
+void swap2(int *p1, int *p2)
 {
-	int temp = *p1;
-	*p1 = *p2;
-	*p2 = temp;
+    int temp = *p1;
+    *p1 = *p2;
+    *p2 = temp;
 }

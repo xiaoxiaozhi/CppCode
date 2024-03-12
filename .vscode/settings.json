@@ -9,7 +9,8 @@
         "istream": "cpp",
         "new": "cpp",
         "sstream": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "iosfwd": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
    
