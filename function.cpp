@@ -27,7 +27,7 @@ using namespace std;
  * 
  *
  *
- *
+ *TODO 函数指针，指向函数的指针， 视频没有要自己总结
  */
 // 改变 传递值的 两种参数
 void reset(int *p); // 指针形参

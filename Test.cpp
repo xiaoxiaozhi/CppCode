@@ -1,13 +1,11 @@
 #include <iostream>
 #include <string.h>
-class TT
-{
-public:
-    int *t1;
-};
+#include <sys/types.h>
+#include <unistd.h>
+
 int main()
 {
-    TT tt;
-    *tt.t1 =  20;//为什么无法赋值？？？
+    pid_t t = fork();
+    cout<<"进程号---"<<t<<endl;
     return 1;
 }

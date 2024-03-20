@@ -1,4 +1,5 @@
 #include <iostream>
+#include <typeinfo>
 using namespace std;
 /**
  * 模版
@@ -21,15 +22,95 @@ using namespace std;
  *   4.2 如果函数模版可以发生更好的匹配优先调用函数模版
  *   4.3 模版的局限性 比如说addNum 模版，传入的是自定义类型根本就没有加法，此时就会报错，为了解决这列问题提供了模版的重载
  *       利用具体化的模板，可以解决自定义类型的通用化 template<> 模版函数 () T替换成具体类型，遇到自定义类型会优先调用具体化模版
+ * 5.类模版
+ *   定义：template<typename T，typename E> 换行 class DiyClass{T t1，E e1}
+ *   类模板在定义的时候和函数模版基本一致，但是类模板没有类型推导，只能显式指定参数类型
+ *   类模板可以设置默认参数类型,默认类型支持隐式转换，int->double 'c'->string
+ *   C++中的内置类型（如整数、浮点数、指针等）之间可以发生隐式类型转换，自定义类型可以定义转换函数例如 operator int() { return m_value; }
+ *   5.1 类模板成员函数创建时机
+ *       只要不调用就不会去创建，模版的类型T 对象可以执行任何函数和方法。感觉不通用只能匹配适合的类。如果类模板指定的参数类型没有这个方法或者构造函数错误
+ *       就会报错。c++模版远不如java的泛型好用
+ *   5.2 类模板作为函数参数
+ *       5.2.1指定传入的类型 --- 直接显示对象的数据类型，实际开发中这种最常用
+ *       5.2.2参数模板化 --- 将对象中的参数变为模板进行传递, 参数模版化与制定传入类型比较相似
+ *       5.2.3整个类模板化 --- 将这个对象类型 模板化进行传递
+ *   5.3 类模板与继承
+ *       当子类继承的父类是一个类模板时，子类在声明的时候，要指定出父类中T的类型，如果不指定，编译器无法给子类分配内存
+ *       如果想灵活指定出父类中T的类型，子类也需变为类模板
+ *
  *
  */
 class Person
 {
 public:
-    Person(int a, string n): age(a), name(n) {}
+    Person(int a, string n) : age(a), name(n) {}
     int age;
     string name;
+    void show()
+    {
+        cout << "姓名---" << name << " 年龄---" << age << endl;
+    }
 };
+// 5.1 类模板成员函数创建时机
+template <typename T>
+class MyClass
+{
+public:
+    T obj; // 如果指定的参数没有默认构造函数，会立马报错
+    void func()
+    {
+        obj.show();
+    }
+};
+
+// 5.类模板
+template <typename T, typename E>
+class Animal
+{
+public:
+    Animal(T n, E a) : name(n), age(a) {}
+    T name;
+    E age;
+    void showInfo()
+    {
+        cout << "姓名 " << name << " 年龄  " << age << endl;
+    }
+};
+// 5.2.1 显示指定类模板参数类型
+// void printAnimal(Animal<string, int> &ani)
+// {
+//     cout << "---显示指定类模板参数类型---" << endl;
+//     ani.showInfo();
+// }
+// 5.2.2 参数模板化
+template <typename T, typename E>
+void printAnimal(Animal<T, E> &ani)
+{
+    cout << "---参数模板化---" << endl;
+    ani.showInfo();
+    cout << "T的类型为---" << typeid(T).name() << endl;
+    cout << "E的类型为---" << typeid(E).name() << endl;
+}
+// 5.2.3 整个类模板化
+template <typename T>
+void printAnimal(T &ani)
+{
+    cout << "---整个类模板化---" << endl;
+    ani.showInfo();
+}
+template <typename T, typename E = double>
+class Animal1
+{
+public:
+    Animal1(T n, E a) : name(n), age(a) {}
+    T name;
+    E age;
+    void showInfo()
+    {
+        cout << "姓名 " << name << " 年龄  " << age << endl;
+    }
+};
+
 // 1.函数模版
 template <typename T>
 void mySwap(T &a, T &b) // 函数模板
@@ -104,7 +185,15 @@ int main()
     myPrint(10, 20, 30);
     // 4.2 如果函数模版可以发生更好的匹配优先调用函数模版
     myPrint('c', 'd'); // 如果发生隐式转化，编译器会优先调用模版，避免普通函数发生隐式转换
-    //4.3
-    cout<<"具体化模版---"<<(Person(10,"123"),Person(20,"456")).age<<endl;
+    // 4.3
+    cout << "具体化模版---" << (Person(10, "123"), Person(20, "456")).age << endl; // 这是什么语法？？？为什么括号可以调用对象
+    // 5.类模板
+    Animal<string, int> ani("sd", 100);
+    ani.showInfo();
+    Animal1<string> ani1("类模板设置默认参数类型", 'c');
+    ani1.showInfo();
+    // 5.2
+    printAnimal(ani);
+    printAnimal(ani1);
     return 0;
 }
