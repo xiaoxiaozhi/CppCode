@@ -25,7 +25,7 @@ using namespace std;
 //        数据类型 数组名[ 数组长度 ];
 //        数据类型 数组名[ 数组长度 ] = { 值1，值2 ...};
 //        数据类型 数组名[ ] = { 值1，值2 ...};
-//        实践发现 (int)&arr[0] 会报错，int* 转 int 会丢失精度，sizeOf(&arr[0])发现是8字节，应该转成long long或者使用printf函数
+//        实践发现 (int)&arr[0] 会报错，int* 转 int 会丢失精度，sizeOf(&arr[0])发现是8字节，应该转成long long或者使用printf函数, uintptr_t 用于指针地址类型与整形转换
 //    2.9 二维数组
 //        数据类型 数组名[ 行数 ][ 列数 ];
 //        数据类型 数组名[ 行数 ][ 列数 ] = { {数据1，数据2 } ，{数据3，数据4 } };
@@ -63,6 +63,8 @@ int main()
     //  char* str2 = "char* str2";//它表示在试图将一个字符串常量转换为char*类型的指针时发生了错误,可以使用const char*类型的指针来指向字符串常量
     const char *str2 = "char* str2"; //
     cout << "C风格字符串2---" << str2 << endl;
+    printf("C风格字符串str1长度%d\n", strlen(str2));
+    printf("C风格字符串str2长度%d\n", strlen(str2));
     string str = "hello world";
     cout << "C++风格字符串---" << str << endl;
     // 2.8
@@ -72,7 +74,7 @@ int main()
     cout << "数组的元素个数为： " << sizeof(arr) / sizeof(arr[0]) << endl;
     // 、可以通过数组名获取到数组首地址
     // printf("数组首地址为：%d\n", arr);
-    cout << "数组首地址为：" << (long long)arr << endl;
+    cout << "数组首地址为：" << (uintptr_t)arr << endl;
     cout << "数组中第一个元素地址为： " << (long long)&arr[0] << endl;
     cout << "数组中第二个元素地址为： " << (long long)&arr[1] << endl;
     // 2.9 二维数组
