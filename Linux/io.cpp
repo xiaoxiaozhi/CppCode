@@ -28,8 +28,10 @@
  * arg1:文件描述符
  * arg2：缓冲区
  * arg2：读写的字节
- * ssize_t read(int fd, void *buf, size_t count);
+ * ssize_t read(int fd, void *buf, size_t count);，返回-1 读错 0读完 >0读到数据
  * ssize_t write(int fd, const void *buf, size_t count);
+ * 读写系统调用速度比不上c库函数读写文件，因为系统调用没有用缓冲区，是一个字节一个字节读写。每次读写都要从用户空间到内核空间切换，状态切换是个耗时操作
+ * 系统调用就是帮助用户调用内核空间才有的功能
  * 这俩函数差不多，返回一个有符号整形，失败返回-1 并且设置errno
  * 写完要close关闭文件，再次open文件才能读文件
  *
@@ -47,7 +49,10 @@
  * trerror(errno)得到的错误与perror一致
  * open函数还能打开目录
  * printf("read了%d个字符--%.*s", n, n, buf_read); 按长度打印数组长度
- *
+ * 
+ * strace ./可执行文件，可以打印程序执行过程中的系统调用
+ * PCB进程控制块 中保存着文件描述符表，表中的每个文件描述符是一个指针，open函数返回的fd就是表的下标。一个进程最多打开1024个文件
+ * 老师说前三个文件描述符是 STDIN_FILENO STDOUT_FILENO STDERR_FILENO  这几个东西是什么呢？？？确实是这样，我自己打开open后得到值是3，验证了这个说法 
  */
 int main()
 {
@@ -58,7 +63,7 @@ int main()
         cout << "创建文件成功---" << descriptor << endl;
         // 2. 读写
         const char *buf = "hello word";
-        printf("buf长度%d\n",strlen(buf));
+        printf("写buf长度%d\n",strlen(buf));
         write(descriptor, buf, strlen(buf));
         close(descriptor);
 

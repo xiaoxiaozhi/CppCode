@@ -63,7 +63,7 @@ int main()
     //  char* str2 = "char* str2";//它表示在试图将一个字符串常量转换为char*类型的指针时发生了错误,可以使用const char*类型的指针来指向字符串常量
     const char *str2 = "char* str2"; //
     cout << "C风格字符串2---" << str2 << endl;
-    printf("C风格字符串str1长度%d\n", strlen(str2));
+    printf("C风格字符串str1长度%d\n", strlen(str1));
     printf("C风格字符串str2长度%d\n", strlen(str2));
     string str = "hello world";
     cout << "C++风格字符串---" << str << endl;
