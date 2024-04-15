@@ -23,7 +23,8 @@
  * Open()打开由路径名指定的文件。如果指定的文件不存在，则可以通过 open()选择创建它(如果在标志中指定了 O_CREAT)
  * arg1:文件路径
  * arg2:必须包含这几个中的一个，O_RDONLY, O_WRONLY, or O_RDWR.其他flag可以通过 | 添加(标志很多，看手册)
- * arg3:创建文件时 赋予文件的权限
+ * arg3:如果创建文件， 赋予文件的权限  (mode & ~umask) Ubuntu umask值=0002   传入 0777  (0777 & ~umask)=0775 。生成的文件权限确实是0775
+ * 终端输入umask可以得到当前系统的umask值当前是0002
  * int open(const char *pathname, int flags, mode_t mode);//创建文件时必须制定mode_t，如果不指定，会有什么后果呢？mode_t种类繁多具体看manpages
  * 2. 读写
  * arg1:文件描述符
@@ -66,18 +67,22 @@
  *    read(STDIN_FILENO, keyRead, sizeof(keyRead)); 会一直等待键盘输入 产生阻塞
  *    阻塞是设备文件和网络文件的属性，以非阻塞方式打开文件 open("dev/tty",O_WRONLY|O_NONBLOCK)，如果没有数据返回-1并且erron赋值 EWOULDBLOCK
  *    TODO O_NONBLOCK 04000 在minggw64下面没有，在ubuntu里面有。
- *
- *
  * 在C++中，如果使用printf函数输出内容时不加\n，输出的内容可能不会立即打印出来，而是会被缓冲起来，直到缓冲区满了或者遇到换行符才会刷新输出。
  *   printf("Hello, ");
  *   fflush(stdout); // 强制刷新，输出缓冲
  *   printf("world!");
- *5. fcntl()改变文件阻塞属性
- *   不用重新打开文件就可以改变
+ *5. fcntl()改变文属性
+ *   上文中的例子，如果键盘一直不输入就会一直阻塞，那有什么办法改变文件的属性呢？
+ *   本例使用fcntl 不重新打开文件描述符就修改为非阻塞属性 设置O_NONBLOCK或O_NDELAY 改变阻塞属性
+ *   /dev/tty 查了下这个是标准输入和标准输出文件，老师重新打开这个文件。
+ *   read(STDIN_FILENO, keyRead, sizeof(keyRead)); 读外设文件，读错返回-1 ，另一种情况，读设备文件 以非阻塞方式，如果没有读到数据，此时系统会设置
+ *   read返回-1 并且 erron=EAGAIN or EWOULDBLOCK  
+ *   fcntl不用重新打开文件就可以改变文件属性
  */
-void unixIo(); // 没有缓冲机制，读写要慢，好处是能立即的写入文件。库函数要等缓冲区满了才能写入文件各有优缺点。
-void cio();    // 有缓冲机制读写快。这个例子读写字符，怎么读写二进制呢？总结库函数要比系统函数好用
-void block();  // 阻塞
+void unixIo();  // 没有缓冲机制，读写要慢，好处是能立即的写入文件。库函数要等缓冲区满了才能写入文件各有优缺点。
+void cio();     // 有缓冲机制读写快。这个例子读写字符，怎么读写二进制呢？总结库函数要比系统函数好用
+void block();   // 阻塞
+void unblock(); // 不重新打开改变文件属性
 int main()
 {
 
@@ -86,6 +91,8 @@ int main()
     unixIo();
     cio();
     block();
+    printf("改变标准输入文件属性--->非阻塞，再次执行block()看是否阻塞\n");
+    unblock();
     return 1;
 }
 void unixIo()
@@ -101,7 +108,7 @@ void unixIo()
     cout << "创建文件成功---" << descriptor << endl;
     // 2. 读写
     const char *buf = "hello word\n";
-    printf("写buf长度%d\n", strlen(buf));
+    printf("写buf长度%zu\n", strlen(buf));
     write(descriptor, buf, strlen(buf));
     close(descriptor);
 
@@ -155,7 +162,7 @@ void cio()
 void block()
 {
     // 4. 读外设，阻塞
-    char keyRead[1024];
+    char keyRead[5];
     int keybord = read(STDIN_FILENO, keyRead, sizeof(keyRead));
     if (keybord > 0)
     {
@@ -167,4 +174,12 @@ void block()
     {
         perror("读键盘err---");
     }
+}
+void unblock()
+{
+    int flag = fcntl(STDIN_FILENO, F_GETFL);
+    // flag |= O_APPEND;
+    flag |= O_NONBLOCK;
+    fcntl(STDIN_FILENO, F_SETFL, flag);
+    block();
 }
