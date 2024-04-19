@@ -79,24 +79,27 @@
  *   read返回-1 并且 erron=EAGAIN or EWOULDBLOCK
  *   fcntl不用重新打开文件就可以改变文件属性
  *6. 移动文件指针、扩展文件
- *   off_t 返回偏移结果
+ *   SEEK_SET: 从文件头部开始偏移 offset 个字节
+ *   SEEK_CUR: 从当前文件指针的位置向后偏移offset个字节
+ *   SEEK_END: 从文件尾部向后偏移offset个字节
+ *   返回值:off_t 文件指针从头部开始计算总的偏移量
  *   off_t lseek(int fd, off_t offset, int whence);
  *   6.1 移动文件指针
- *        lseek(fd,0,SEEK_END);移动到最后  lseek(fd,0,SEEK_CUR);得到当前文件指针位置 lseek(fd,0,SEEK_SET)文件指针移动到文件头部
+ *        lseek(fd,0,SEEK_END);得到文件大小,并移动文件指针到尾部  lseek(fd,0,SEEK_CUR);得到当前文件指针位置 lseek(fd,0,SEEK_SET)文件指针移动到文件头部
  *   6.2 扩展文件
  *       lseek(fd,10,SEEK_END)   然后必须再写一个字符 write(fd," ",1)否则扩展无效
  * 7.文件扩展或者截断
  *   int truncate(const char *path, off_t length);
- *	 int ftruncate(int fd, off_t length);  
+ *	 int ftruncate(int fd, off_t length);
  *   文件原来size > length，文件被截断, 尾部多余的部分被删除, 文件最终长度为length
  *   文件原来size < length，文件被拓展, 文件最终长度为length
  *   两者区别在于 一个传入路径一个传入 文件描述符。 上文提到扩展文件要再写一个字符否则无效，用这个函数可以直接扩展无需再写
- *   ftruncate(fd,1024);
- *   
+ *   ftruncate(fd,1024); 用 这个函数可以代替上面 lseek + write
+ *
  * 注意：读或写函数执行完必须 close 否则无法 继续读或写。正确  read close write 或者 write close read；错误 read write 或者 write read 。
  *      读或者写之后可以移动文件指针吗？
- * 
- * 
+ *
+ *
  */
 void unixIo();  // 没有缓冲机制，读写要慢，好处是能立即的写入文件。库函数要等缓冲区满了才能写入文件各有优缺点。
 void cio();     // 有缓冲机制读写快。这个例子读写字符，怎么读写二进制呢？总结库函数要比系统函数好用
@@ -120,6 +123,8 @@ int main()
     }
     // 6.1 移动文件指针
     off_t ft = lseek(fd, 0, SEEK_END); // 虽然没有指定文件续写属性，但是指针移动到最后，再写字符就实现了续写功能
+    int cur = lseek(fd, 0, SEEK_CUR);
+    printf("文件指针位置%d", cur);
     if (ft < 0)
     {
         perror("lseek移动指针失败---");
