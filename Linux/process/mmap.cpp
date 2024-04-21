@@ -21,7 +21,8 @@
  * 成功: 返回一个内存映射区的起始地址 失败: MAP_FAILED (that is, (void *) -1)
  * void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
  * 1. 创建映射文件
- *    open(O_CREAT) 再调用 lseek() write()这是因为大小为0的文件无法映射，所以要给文件设置长度(黑马老师这样说的但是大丙老师用例子证明可以)
+ *    open(O_CREAT,读写) 再调用 lseek() write()这是因为大小为0的文件无法映射，msys2和ubuntu验证确实无法映射(黑马老师说的对要给文件设定大小，大丙老师的例子错了)
+ *    文件只读属性也不可以，因为无法扩展 ；只写也不行
  * 2. 创建映射区
  *    void *p = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
  * 3. 向映射区写
@@ -30,7 +31,8 @@
  *    len:映射区大小，我如果填的值比真实值大或者小会怎么样呢？？？
  *    munmap(p,len);
  * 5. 进程间通过映射文件
- * 
+ *    大丙老师的例子，拷贝文件， 打开文件A 创建映射A、 打开文件B 创建映射B。 mmcpy(A，B) 实现拷贝文件
+ *
  *
  *
  * */
@@ -41,23 +43,35 @@ int main()
     int fd = open("mmap.txt", O_CREAT | O_RDWR, 0777);
     // off_t len = lseek(fd, 1023, SEEK_END);
     // write(fd,"\0",SEEK_END);
-    // ftruncate(fd, 1024); // 给文件设置大小的原因是因为，系统资源紧张防止存储空间不够。我觉得这才是真正原因
-    // int len = lseek(fd, 0, SEEK_END);//文件指针在末尾，在映射区写东西，结果出现在文件开头
-    printf("偏移%d\n", 1024);
+    ftruncate(fd, 1024);              // 给文件设置大小的原因是因为，系统资源紧张防止存储空间不够。我觉得这才是真正原因
+    int len = lseek(fd, 0, SEEK_END); // 文件指针在末尾，在映射区写东西，结果出现在文件开头
+    printf("偏移%d\n", len);
     // 2.创建映射区
-    char *p = (char *)mmap(NULL, 1024, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    char *p = (char *)mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     // int pid = fork();
-    strcpy(p, "vjb");// 相当与写文件
-    printf("读映射区%s|\n",p);//相当与读文件
+    strcpy(p, "vjb");           // 相当与写文件
+    printf("读映射区%s|\n", p); // 相当与读文件
     close(fd);
-    munmap(p, 1024);
-    // if (pid > 0)
-    // {
-
-    // }
-    // else if (pid == 0)
-    // {
-    // }
+    munmap(p, len);
+    // 5.进程间映射区通信
+    int pid = fork();
+    int fd1 = open("mmap.txt", O_CREAT | O_RDWR, 0777);
+    ftruncate(fd1, 1024);
+    int len1 = lseek(fd1, 0, SEEK_END);
+    // 2.创建映射区
+    char *p1 = (char *)mmap(NULL, len1, PROT_READ | PROT_WRITE, MAP_SHARED, fd1, 0);
+    if (pid > 0)
+    {
+        const char *str = "你好子进程";
+        memcpy(p1, "你好子进程", strlen(str));
+    }
+    else if (pid == 0)
+    {
+        sleep(1);
+        printf("子进程收到---%s\n", p1);
+    }
+    close(fd1);
+    munmap(p1, len1);
     perror("");
 
     return 1;
