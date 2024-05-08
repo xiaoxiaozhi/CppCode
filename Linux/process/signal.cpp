@@ -34,7 +34,7 @@
  *   real	0m1.003s 程序执行时间
  *   user	0m0.004s 程序运行在用户空间消耗时间
  *   sys	0m1.006s 程序运行在用户内核消耗时间     老师说 real>user+sys 因为要等待设备，。为什么我这个例子不是呢？？？
- * 6.setitimer 必alarm更精细
+ * 6.setitimer 比alarm更精细
  *
 */
 int main(){
