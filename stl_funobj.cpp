@@ -26,7 +26,7 @@ public:
 // 2.
 class MyPrint
 {
-    int count{};
+    int count{};//c++11 引入的初始化语法
 
 public:
     void operator()(string test)

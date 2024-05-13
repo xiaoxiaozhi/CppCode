@@ -21,13 +21,14 @@ using namespace std;
  * 4.引用作为函数返回值
  *   int& test02(){return 变量}  返回值类型& 函数体返回变量  
  * 5.默认参数
- *   
  * 
+ * 6.函数指针  来自千询
+ *   函数指针是指向函数的指针，可以用来动态地调用函数，传递函数作为参数，或者在运行时确定调用的函数。函数指针的声明和使用可以大大增加程序的灵活性和可扩展性。
+ *   函数指针的声明形式为 返回类型 (*指针名称)(参数类型,参数类型)
+ *   通过函数 指针可以直接调用函数 int result = ptr(3, 5);  // 调用 add 函数
+ *   函数指针作为函数参数 void process(int (*func)(int, int))
+ *   使用 typedef 简化声明  typedef int (*FuncPtr)(int, int); FuncPtr ptr = add;  // 使用 typedef 声明的函数指针
  *   
- * 
- *
- *
- *TODO 函数指针，指向函数的指针， 视频没有要自己总结
  */
 // 改变 传递值的 两种参数
 void reset(int *p); // 指针形参
@@ -36,7 +37,11 @@ int func(int a, int b = 10, int c = 10) {
 	return a + b + c;
 }
 
-
+//6. 函数指针
+int add(int a, int b) {
+    return a + b;
+}
+int (*ptr)(int, int) = add;  // 指向 add 函数的指针
 int main()
 {
     int a = 6;
