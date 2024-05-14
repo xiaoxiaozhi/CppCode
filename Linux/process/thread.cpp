@@ -21,13 +21,29 @@
  *   int pthread_create(pthread_t *thread, const pthread_attr_t *attr,void *(*start_routine) (void *), void *arg);
  *   pthread_t pthread_self(void); 获取线程号
  * 2.循环创建线程
- *   
+ *   线程函数传值，注意值传递和地址传递的区别
+ * 3.线程间共享变量
+ *   位于同一虚拟地址空间中的线程，虽然不能共享栈区数据，但是可以共享全局数据区和堆区数据
+ *
  * 子线程被创建出来之后需要抢cpu时间片, 抢不到就不能运行，如果主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了。但是如果某一个子线程退出了, 主线程仍在运行, 虚拟地址空间依旧存在。
  * 编译的时候要加上 -lpthread 参数
  */
 void *tfun(void *arge)
 {
-    printf("线程创建成功 %ld\n", pthread_self());
+    printf("线程创建成功 %ld ，当前进程id %d\n", pthread_self(), getpid());
+    return NULL;
+}
+void *tfun1(void *arge)
+{
+    sleep(1);
+    printf("线程创建成功 %ld ，当前进程id %d 接收到的值%d\n", pthread_self(), getpid(), *((int *)arge));
+    return NULL;
+}
+int var = 100; // 全局变量
+void *tfun2(void *arge)
+{
+    var = 200;
+    printf("子线程修改var值%d\n", var);
     return NULL;
 }
 int main()
@@ -36,11 +52,25 @@ int main()
     printf("当前线程的id %ld ,当前进程的id %d\n", pthread_self(), getpid()); // 为什么还没创建线程就可以得到线程id，且进程id和线程id不一致
     pthread_t tid;
     int ret = pthread_create(&tid, NULL, tfun, NULL);
-    printf("ret %ld tid %ld\n", ret, tid);//不加 \n打印不出来线程 回调函数，神奇了。这是因为子线程被创建出来之后需要抢cpu时间片, 抢不到就不能运行，如果主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了。但是如果某一个子线程退出了, 主线程仍在运行, 虚拟地址空间依旧存在。
+    printf("ret %ld tid %ld\n", ret, tid); // 不加 \n打印不出来线程 回调函数，神奇了。这是因为子线程被创建出来之后需要抢cpu时间片, 抢不到就不能运行，如果主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了。但是如果某一个子线程退出了, 主线程仍在运行, 虚拟地址空间依旧存在。
     if (ret < 0)
     {
         perror("创建线程失败");
     }
-    sleep(2);//进程执行完，释放虚拟空间，如果线程还来不及执行就会被销毁
+    sleep(1); // 进程执行完，释放虚拟空间，如果线程还来不及执行就会被销毁
+    // 2. 循环创建线程
+    printf("2.循环创建线程-----------------------------\n");
+    for (int i = 5; i > 0; i--)
+    {
+        pthread_create(&tid, NULL, tfun1, &i); // 传递的是地址，当线程隔一秒执行的时候，i地址的值成了0，这里采用值传递就不会出现这种现象
+    }
+    sleep(3);
+    // 3. 线程间共享变量
+    printf("3. 线程间共享变量-----------------------------\n");
+    printf("主线程var=%d\n", var);
+    pthread_create(&tid, NULL, tfun2, NULL);
+    sleep(1);
+    printf("主线程var=%d\n", var);
+    sleep(1);
     return 1;
 }

@@ -63,7 +63,8 @@
 int main()
 {
     // 1. 创建监听的套接字
-    int lfd = socket(AF_INET, SOCK_STREAM, 0);
+    // int lfd = socket(AF_INET, SOCK_STREAM, 0);
+     int lfd = socket(AF_LOCAL, SOCK_STREAM, 0);
     if (lfd == -1)
     {
         perror("socket");
@@ -78,7 +79,7 @@ int main()
                                   // 这个宏可以代表任意一个IP地址
                                   // 这个宏一般用于本地的绑定操作
     // addr.sin_addr.s_addr = INADDR_ANY;  // 这个宏的值为0 == 0.0.0.0
-    inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "127.0.1.1", &addr.sin_addr.s_addr);
     int ret = bind(lfd, (struct sockaddr *)&addr, sizeof(addr));
     if (ret == -1)
     {

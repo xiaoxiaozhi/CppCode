@@ -58,7 +58,8 @@
 int main()
 {
       // 1. 创建通信的套接字
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
+    // int fd = socket(AF_INET, SOCK_STREAM, 0);
+     int fd = socket(AF_LOCAL, SOCK_STREAM, 0);
     if(fd == -1)
     {
         perror("socket");
@@ -69,7 +70,7 @@ int main()
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(10000);   // 大端端口
-    inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "127.0.1.1", &addr.sin_addr.s_addr);// 127开头好像是本地地址
 
     int ret = connect(fd, (struct sockaddr*)&addr, sizeof(addr));
     if(ret == -1)
