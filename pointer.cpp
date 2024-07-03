@@ -15,6 +15,10 @@ using namespace std;
  *    https://www.zhihu.com/question/52252124
  * 8. 指针和函数
  *    利用指针作函数参数，可以修改实参的值
+ * --------------------------------------来自网络查找
+ * void * 可以接收任意指针类型  void * value = new int(0); 接收int指针， 使用的时候 *(int*)value 这种强制转换并不推荐
+ * *(static_cast<int*>(ptr))类型安全c++推荐做法 
+ * (void*)30 黑马老师这样转换我编译报错，正确做法应该是 static_cast<void*>(new int(30))
  *
  */
 void swap2(int *p1, int *p2);
