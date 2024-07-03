@@ -26,13 +26,20 @@
  * 3.线程间共享变量
  *   位于同一虚拟地址空间中的线程，虽然不能共享栈区数据，但是可以共享全局数据区和堆区数据
  * 4.线程退出
- *   exit()表示退出进程
+ *   exit(0);//退出进程
+ *   pthread_exit(void* retval)表示退出线程，可以和 return NULL相互替代， 其中retval 代表线程返回值，我从哪接收这个值呢？在这里吗pthread_create
+ *   感觉语法上不同，但是编译器认为是一回事
+ *   在线程函数中return NULL 退出线程，可以将NULL或nullptr等效void*类型的空指针
+ * 5.等待线程终止
+ *   pthread_join()
+ * 
  *
  *
  *暂时不看了，学习socket
  *
  * 子线程被创建出来之后需要抢cpu时间片, 抢不到就不能运行，如果主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了。但是如果某一个子线程退出了, 主线程仍在运行, 虚拟地址空间依旧存在。
  * 编译的时候要加上 -lpthread 参数
+ * reinterpret_cast 类型转换.例如 int 转 void* reinterpret_cast<void *>(传入一个int变量)
  */
 void *tfun(void *arge)
 {
@@ -52,22 +59,32 @@ void *tfun2(void *arge)
     printf("子线程修改var值%d\n", var);
     return NULL;
 }
-void *tfun3(void * arge)
+void *tfun3(void *arge)
 {
-    int i = reinterpret_cast<int>(arge);;
-    if (i == 2)
+    long i = reinterpret_cast<long>(arge); // arge 是指针类型在64为平台上有8位，转成int会报错以及丢失精度，应该转成long
+    // long i = (long)(arge);//这样也可以
+    // int i = (int)arge;黑马老师是这样转的，我编译不过，怀疑他用的是32位操作系统
+    if (i == 3)
     {
-        printf("如果i=2退出线程---\n");
+        printf("如果i=3退出线程---\n");
+        // exit(0);//退出进程
         pthread_exit(NULL);
-        // return NULL: 返回函数调用者不是退出线程。
+        // return NULL;//退出线程
+        
     }
-    printf("线程创建成功 %ld ，当前进程id %d 接收到的值%d\n", pthread_self(), getpid(), i);
-    return NULL;
+    printf("线程创建成功 %ld ，当前进程id %d 接收到的值%ld\n", pthread_self(), getpid(), i);
+    // return NULL;// return NULL: 返回函数调用者不是退出线程。注释掉这句报错，pthread_exit(NULL);可以代替 return NULL
+    pthread_exit(NULL);//可以代替 return NULL
+}
+void* tfun4(void *arge)
+{
+   pthread_exit((void*)30);
 }
 int main()
 {
 
-    printf("当前线程的id %ld ,当前进程的id %d\n", pthread_self(), getpid()); // 为什么还没创建线程就可以得到线程id，且进程id和线程id不一致
+    // 没有创建线程也能得到线程id，pthread_self()认为进程是一个独享独立空间的线程
+    printf("当前线程的id %ld ,当前进程的id %d\n", pthread_self(), getpid());
     pthread_t tid;
     int ret = pthread_create(&tid, NULL, tfun, NULL);
     printf("ret %ld tid %ld\n", ret, tid); // 不加 \n打印不出来线程 回调函数，神奇了。这是因为子线程被创建出来之后需要抢cpu时间片, 抢不到就不能运行，如果主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了。但是如果某一个子线程退出了, 主线程仍在运行, 虚拟地址空间依旧存在。
@@ -94,8 +111,16 @@ int main()
     printf("4. 线程退出-----------------------------\n");
     for (int i = 5; i > 0; i--)
     {
-        pthread_create(&tid, NULL, tfun3,(void*) i); // 传递的是地址，当线程隔一秒执行的时候，i地址的值成了0，这里采用值传递就不会出现这种现象
+        pthread_create(&tid, NULL, tfun3, reinterpret_cast<void *>(i)); 
+        //  pthread_create(&tid, NULL, tfun3, (void *)i); 黑马老师的方法，我编译不过
     }
-    sleep(3);
+    sleep(1);
+    //5. 等待线程终止
+    printf("5. 等待线程终止-----------------------------\n");
+    pthread_create(&tid, NULL, tfun4, NULL);
+    int **joinValue = NULL;
+    pthread_join(tid,joinValue);
+    printf("等待线程终止var=%d\n", **joinValue);
+    pthread_exit((void *)0); // 退出主线程，不影响子线程，这样就不必sleep等待子线程执行完再结束进程
     return 1;
 }
