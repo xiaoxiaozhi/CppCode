@@ -59,7 +59,7 @@ int main()
 {
       // 1. 创建通信的套接字
     // int fd = socket(AF_INET, SOCK_STREAM, 0);
-     int fd = socket(AF_LOCAL, SOCK_STREAM, 0);
+    int fd = socket(AF_LOCAL, SOCK_STREAM, 0);
     if(fd == -1)
     {
         perror("socket");

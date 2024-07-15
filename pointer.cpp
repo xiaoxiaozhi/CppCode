@@ -19,6 +19,7 @@ using namespace std;
  * void * 可以接收任意指针类型  void * value = new int(0); 接收int指针， 使用的时候 *(int*)value 这种强制转换并不推荐
  * *(static_cast<int*>(ptr))类型安全c++推荐做法 
  * (void*)30 黑马老师这样转换我编译报错，正确做法应该是 static_cast<void*>(new int(30))
+ * int* restrict num = new int(1); restrict 关键字的作用是， num指向的内存空间只能由num操作，该片内存空间不能让其他指针操作
  *
  */
 void swap2(int *p1, int *p2);

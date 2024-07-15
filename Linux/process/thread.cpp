@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <iostream>
+#include <string.h>
 /**
  * 线程是轻量级的进程，本质还是进程(Linux)
  * 与进程相比线程没有独立的 存储空间，但是有独立的PCB
@@ -42,10 +43,26 @@
  *   pthread_detach(tid) 成功返回0，失败返回错误号。 执行pthread_detach的线程，不能再执行pthread_join
  *   当一个线程处于分离状态时，它的资源在其终止时会被自动释放，而不需要其他线程调用pthread_join来进行资源回收。这意味着线程可以在后台运行，不需要其他线程等待它的结束并回收资源。
  *   pthread_join 回收？？？ 线程中的方法不是在栈中执行吗？执行完了会自动回收的呀，为什么还要他线程调用pthread_join来进行资源回收
+ *   设置线程分离属性 还没搞
+ * 8.线程同步
+ *   互斥锁，每个线程在对资源操作前都尝试拿锁，拿到锁才能对共享区进行操作，操作结束释放锁，拿不到锁线程就会阻塞
+ *   ①pthread_mutex_t mutex; 锁结构体，定义一把互斥锁
+ *   ②pthread_mutex_init(pthread_mutex_t* restrict mut，)//初始化锁，arg1 锁结构体指针，arg2 锁结构体属性 成功返回0 失败返回错误码
+ *   ③pthread_mutex_lock(&mutex);加锁 
+ *    共享资源 本例的共享资源是屏幕输出
+ *   ④pthread_mutex_lock(&mutex);解锁
+ *   从例子8可以看出，子线程和主线程交替打印，这是因为加锁后，其他线程抢占不到就会阻塞，释放后其他线程抢占到锁开始执行。
+ *   pthread_mutex_trylock(&mutex) 尝试取得锁成功返回0，如果失败返回EBUSY，我的环境失败怎么返回1呢？？？
+ *   读写模式加锁 待学习
+ *   pthread_mutex_destroy(&mutex); 销毁锁
+ *   死锁的两种情况，
+ *   一个资源两把锁，两个线程各自持有一把锁，然后请求另一把锁。
+ *   对资源反复加锁，比如加两次锁，第二次就会阻塞吗？？？
+ *   条件变量实现同步
+ *   
  *   
  *
- *
- *
+ * 接收string类型的函数 不会写
  * 子线程被创建出来之后需要抢cpu时间片, 抢不到就不能运行，如果主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了。但是如果某一个子线程退出了, 主线程仍在运行, 虚拟地址空间依旧存在。
  * 编译的时候要加上 -lpthread 参数
  * reinterpret_cast 类型转换.例如 int 转 void* reinterpret_cast<void *>(传入一个int变量)
@@ -101,6 +118,24 @@ void *tfun5(void *arge)
     }
     pthread_exit(NULL);
 }
+// void printMsg(int ret,std::string& msg);
+pthread_mutex_t mutex;
+void *tfun6(void *arge)
+{
+    // pthread_testcancel();
+    int n = 0;
+    while (n<2)
+    {
+        pthread_mutex_lock(&mutex);
+        printf("hello ");
+        sleep(1);
+        printf("word\n");
+        pthread_mutex_unlock(&mutex);
+        sleep(1);
+        n++;
+    }
+    pthread_exit(NULL);
+}
 int main()
 {
 
@@ -148,21 +183,52 @@ int main()
     printf("等待线程终止var=%d\n", *(static_cast<int *>(joinValue)));
     void *value = malloc(sizeof(void *));
 
-    // 5. 取消线程
+    // 6. 取消线程
     printf("6. 取消线程-----------------------------\n");
     pthread_create(&tid, NULL, tfun5, NULL);
     sleep(3);
     ret = pthread_cancel(tid);
-    pthread_join(tid, &value);
-    if (ret == 0)
+      if (ret == 0)
     {
         printf("线程取消成功 id = %ld\n", tid);
         // printf("线程取消后再join会得到什么？  %d\n", *(static_cast<int*>(value)));
     }
     else
     {
-        perror("线程取消失败---");
+        printf("取消线程失败%s",strerror(ret));
     }
+    ret = pthread_join(tid, &value);
+    //8.线程同步
+    printf("8. 线程同步-----------------------------\n");
+    ret = pthread_mutex_init(&mutex,NULL);
+    pthread_create(&tid,NULL,tfun6,NULL);
+    int n = 0;
+    while (n<5)
+    {
+      
+        if(ret = pthread_mutex_trylock(&mutex)!=0){
+            printf("%d尝试取得锁失败%s\n",ret,strerror(ret));
+            sleep(1);
+            continue;
+        }
+        // pthread_mutex_lock(&mutex);
+        printf("HELLO ");
+        sleep(1);
+        printf("WORD\n");
+        pthread_mutex_unlock(&mutex);
+        n++;
+    }
+    pthread_mutex_destroy(&mutex);
+
     pthread_exit((void *)0); // 退出主线程，不影响子线程，这样就不必sleep等待子线程执行完再结束进程
     return 1;
 }
+// void printMsg(int ret,std::string &msg){
+//     if(ret == 0){
+//         printf(msg);
+
+//     }else{
+//         printf(msg+"%s",strerror(ret));
+
+//     }
+// }
