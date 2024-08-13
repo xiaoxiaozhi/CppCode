@@ -10,27 +10,30 @@
 #include <string.h>
 
 /**
+ * 网络字节序，主机字节序
+ * 
+ * 
  * socket通信
  * domain:协议族 AF_UNIX或者AF_LOCAL进程间通信、 AF_INET ip4 、AF_INET6 ip6    https://man.cx/address_families(7)
  * type:数据传输类型 ，除了以下两个其他基本不用
  *  SOCK_STREAM 面向连接的socket数据不会丢失、顺序不会乱、双向通信
  *  SOCK_DGRAM 无连接的socket 数据可能会丢失、顺序可能会乱、传输效率更高 (就是基于UDP的socket)
  * protocol：最终使用的协议SOCK_STREAM 对应IPPROTO_TCP  TCP协议 、SOCK_DGRAM 对应使用IPPROTO_UDP UDP协议. 也可以填0
- * int socket(int domain, int type, int protocol);
+ * 
  * 1. 创建socket
+ * int socket(int domain, int type, int protocol);成功: 可用于套接字通信的文件描述符 失败: -1
  * 2. 绑定
  * 将得到的监听的文件描述符和本地的IP 端口进行绑定
  * addrlen 计算第二个参数的长度 sizeof(addr)即可
- * int bind(int sockfd, const struct sockaddr *addr,socklen_t addrlen);
+ * int bind(int sockfd, const struct sockaddr *addr,socklen_t addrlen); 成功返回0，失败返回-1
  * 3.监听
- * int listen(int sockfd, int backlog); backlog 每轮最多监听多少个客户端，内核中写死最多128个，监听结束还有下一轮
+ * int listen(int sockfd, int backlog);函数调用成功返回0，调用失败返回 -1
+ * backlog 每轮最多监听多少个客户端，内核中写死最多128个，监听结束还有下一轮
  * 4.获取监听到的客户端信息
  * int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);*addr传一个空的结构体指针，
- *
- *
- */
-/**
  * 存放协议族、端口和地址信息，客户端和connect()函数和服务端的bind()函数需要这个结构体
+ * 函数调用成功，得到一个文件描述符, 用于和建立连接的这个客户端通信，调用失败返回 -1
+ * 
  * struct sockaddr {
  * unsigned short sa_family;	// 协议族，与socket()函数的第一个参数相同，填AF_INET。
  * unsigned char sa_data[14];	// 14字节的端口和地址。
@@ -58,6 +61,7 @@
  *#define h_addr h_addr_list[0] 	// for backward compatibility.
  *转换后，用以下代码把大端序的地址复制到sockaddr_in结构体的sin_addr成员中。
  *memcpy(&servaddr.sin_addr,h->h_addr,h->h_length);
+ *
  */
 
 int main()
@@ -79,7 +83,7 @@ int main()
                                   // 这个宏可以代表任意一个IP地址
                                   // 这个宏一般用于本地的绑定操作
     // addr.sin_addr.s_addr = INADDR_ANY;  // 这个宏的值为0 == 0.0.0.0
-    inet_pton(AF_INET, "127.0.1.1", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr.s_addr);
     int ret = bind(lfd, (struct sockaddr *)&addr, sizeof(addr));
     if (ret == -1)
     {
