@@ -15,7 +15,7 @@ using namespace std;
 //    2.4 字符型char ch = 'a';用单引号将字符括起来，不要用双引号，只能有一个字符,字符型变量只占有1字节
 //    2.5 转义字符用于表示不能显示出来的字符 \t \n \\等等
 //    2.6 字符串，有两种风格
-//        C     风格 char 变量名[] = "字符串值"
+//        C     风格 char 变量名[] = "字符串值", 再次对字符串赋值就不能这样了 用字符串处理函数 strcpy();赋值超过初始化时的长度，奇怪的是mingw64可以通过编译，msys2不可以，网络搜索也不可以
 //        C++   风格  string 变量名 = "字符串值" 注意要引入 #include <string.h>
 //    2.7 布尔类型：bool类型只有两个值： 占用一个字节
 //        true --- 真（本质是1）
@@ -36,7 +36,8 @@ using namespace std;
 // int i 声明int变量时不是必须要进行初始化的,如果变量未被初始化，它将包含一个未知的值，这可能会导致不可预测的行为,做好初始化
 // 在C++11之后的标准中，引入了统一的初始化语法 int i{}; i值为0
 //
-//
+//c 标准库处理字符串的函数
+// strcpy()  strncpy(dest, src, 5);  size_t len = strlen(str);  // 获取字符串的长度   未完待总结
 //
 // 1.1
 #define day 7
@@ -59,6 +60,8 @@ int main()
     cout << "直接用ASCII码给字符型变量赋值---" << ch << endl;
     // 2.6
     char str1[] = "hello world"; // C风格要用 双引号括起来
+    // strcpy(str1,"你是知道的12345678909876543210123456789");//"C:\\Program Files\\mingw64\\bin\\gdb.exe",可以通过编译其他不行
+    // printf("C风格字符串1---%s\n",str1);
     cout << "C风格字符串1---" << str1 << endl;
     //  char* str2 = "char* str2";//它表示在试图将一个字符串常量转换为char*类型的指针时发生了错误,可以使用const char*类型的指针来指向字符串常量
     const char *str2 = "char* str2"; //
