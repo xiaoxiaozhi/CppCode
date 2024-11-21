@@ -118,7 +118,7 @@ using namespace std;
  *    Fruit *f = new Cherry(); delete f;//只会调用fruit的析构函数，Fruit析构函数前加virtual变成虚析构之后，就可以调用子类Cherry的析构函数了
  *    有个问题main函数中其他的 对象都没有调用delete最后都调用了析构函数，怎么到了虚析构函数，就要调用delete才能执行析构函数？？？
  * 15.智能指针
- *    c++11引入的概念，不需要手动就能释放内存
+ *    c++11引入的概念，不需要手动就能释放内存, 
  */
 
 class Fruit

@@ -25,3 +25,4 @@ https://code.visualstudio.com/docs/editor/variables-reference 官方属性解释
      
      
 [Vscode官网指南](https://code.visualstudio.com/docs)
+#### 3. c++11 标准 
