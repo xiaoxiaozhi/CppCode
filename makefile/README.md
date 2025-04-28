@@ -96,5 +96,111 @@ $(TARGET):$(OBJS)
 %.o:%.c
     gcc -c -o $@:$<    
 ```
+### 9. makefile 函数 
+Makefile 中的函数可以极大地简化和增强构建过程。以下是一些常用的 Makefile 函数：
+
+### 名称处理函数
+1. **`wildcard`**：获取指定格式的文件列表。
+   ```makefile
+   SRC_FILES := $(wildcard *.c)
+   ```
+
+2. **`dir`**：获取文件所在目录。
+   ```makefile
+   DIRS := $(dir src/foo.c src/bar.c)
+   ```
+
+3. **`notdir`**：获取文件路径的非目录部分。
+   ```makefile
+   FILES := $(notdir src/foo.c src/bar.c)
+   ```
+
+4. **`suffix`**：获取文件后缀。
+   ```makefile
+   SUFFIXES := $(suffix src/foo.c src/bar.c)
+   ```
+
+5. **`basename`**：去除文件后缀。
+   ```makefile
+   BASENAMES := $(basename src/foo.c src/bar.c)
+   ```
+
+### 字符串替换与分析函数
+1. **`subst`**：直接替换字符。
+   ```makefile
+   NEW_STR := $(subst old,new,old_string)
+   ```
+
+2. **`patsubst`**：按格式替换字符。
+   ```makefile
+   OBJECTS := $(patsubst %.c,%.o,$(SRC_FILES))
+   ```
+
+3. **`strip`**：去掉开头和结尾的空白字符。
+   ```makefile
+   STRIPPED := $(strip  string  )
+   ```
+
+4. **`findstring`**：在某个字符串中查找指定字符串。
+   ```makefile
+   FOUND := $(findstring a,abc)
+   ```
+
+5. **`filter`**：保留指定格式的字符串。
+   ```makefile
+   FILTERED := $(filter %.c,$(SRC_FILES))
+   ```
+
+6. **`filter-out`**：去除指定格式的字符串。
+   ```makefile
+   FILTERED_OUT := $(filter-out %.h,$(SRC_FILES))
+   ```
+
+7. **`addprefix`**：为字符串添加前缀。
+   ```makefile
+   PREFIXED := $(addprefix src/,$(SRC_FILES))
+   ```
+
+### 控制函数
+1. **`info`**：打印提示信息。
+   ```makefile
+   $(info This is an info message)
+   ```
+
+2. **`warning`**：打印报警信息。
+   ```makefile
+   $(warning This is a warning message)
+   ```
+
+3. **`error`**：打印错误信息并终止执行。
+   ```makefile
+   $(error This is an error message)
+   ```
+
+### 其他函数
+1. **`foreach`**：循环函数。
+   ```makefile
+   $(foreach var,$(SRC_FILES),$(info $(var)))
+   ```
+
+2. **`call`**：调用函数。
+   ```makefile
+   define myfunc
+   $(1) $(2)
+   endef
+   $(call myfunc,arg1,arg2)
+   ```
+
+3. **`shell`**：执行命令行命令。
+   ```makefile
+   DATE := $(shell date)
+   ```
+
+4. **`eval`**：执行Makefile代码。
+   ```makefile
+   $(eval NEW_VAR := new_value)
+   ```
+
+
 
 

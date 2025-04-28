@@ -1,3 +1,5 @@
+DIR = $(dir %.c) #结果 ./ 只能打印相对目录
+$(info This is an info message $(dir %.c))
 e.txt:c.txt d.txt
 	cat c.txt d.txt > e.txt
 c.txt:a.txt b.txt
