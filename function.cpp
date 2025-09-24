@@ -28,6 +28,12 @@ using namespace std;
  *   通过函数 指针可以直接调用函数 int result = ptr(3, 5);  // 调用 add 函数
  *   函数指针作为函数参数 void process(int (*func)(int, int))
  *   使用 typedef 简化声明  typedef int (*FuncPtr)(int, int); FuncPtr ptr = add;  // 使用 typedef 声明的函数指针
+ * 来自实践中的代码
+ * 7.void参数
+ *   void foo(void);  // 明确表示不接受任何参数
+ *   // 等效于：
+ *   void foo();      // C++ 中空参数列表也表示无参数
+ *   void* 可以指向任意类型数据，但这与 void 参数完全不同
  *   
  */
 // 改变 传递值的 两种参数
