@@ -110,7 +110,7 @@ using namespace std;
  *      // file_1.h
  *        extern const int bufSize;   // same bufSize as defined in file_1.cc   
  *       6.3.2 对常量的引用  cont int &ref = var; 不能通过引用修改被引用对象的值
- *             const int i = 10; int &a = i; //错误
+ *             const int i = 10; int &a = i; //错误 c++ 禁止非const引用绑定到const对象上
  *             const int i = 10; const int &a = i; //正确
  *             int i = 10;  int &a = i; //正确
  *             大部分情况下，引用的类型要和与之绑定的对象严格匹配,但是有两个例外
@@ -121,9 +121,10 @@ using namespace std;
  *             const int &r3 = r1 * 2;     // ok: r3 is a reference to const
  *             int &r4 = r * 2;        // error: r4 is a plain, non const reference
  *       6.4 指向常量的指针
+ *           指向常量的指针（如 const int* p）的核心语义是：「通过该指针，无法修改所指向的变量的值」，它只对「指针的操作权限」做限制，而不关心「所指向的变量本身是否是常量」。
  *           const double pi = 3.14;
  *           const double *cptr = &pi; // 指针指向的值不能通过指针修改      
- *           指针的类型必须与所指常亮的类型一直但是有两个例外，
+ *           指针的类型必须与所指常量的类型一致但是有两个例外，
  *           double d = 3.14; 
  *           cptr = &d; // 指向常量的指针可以指向非常量对象，指向常量的指针仅仅要求不能通过该指针改变对象的值0
  *       6.5 常量指针

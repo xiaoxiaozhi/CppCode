@@ -8,10 +8,10 @@ using namespace std;
 /**
  * 第三章 字符串、向量、数组
  *    string是字符的集合 vector是对象的集合
- * 1. 使用using 我们使用的库函数基本都属于std命名空间，可以使用using声明来简化代码 using std::string;或者 using namespace std;
+ * 3.1. 使用using 我们使用的库函数基本都属于std命名空间，可以使用using声明来简化代码 using std::string;或者 using namespace std;
  *    头文件不应该包含using声明，引用了头文件的cpp文件，容易造成名字冲突
- * 2. 定义和初始化string 参见下列代码
- *    2.1 直接初始化和拷贝初始化
+ * 3.2.1 定义和初始化string 参见下列代码
+ *       直接初始化和拷贝初始化
  *        使用=号初始化一个变量执行的是拷贝初始化，例如 string str = "Hello";
  *        不适用等号则执行的是直接初始化，例如 string str("Hello");
  * 3. string的常用操作
@@ -72,7 +72,14 @@ using namespace std;
  *       int a3[5] = {1,2}; // 其余元素初始化为0
  *       int a4[1] = {1,2}; // 错误，初始值不能多于数组大小
  *       字符数组的特殊性
- *       char arr1[] = "c++"; // 字符串字面值初始化字符数组，但字符串字面值结尾处的空字符也会一起被拷贝到字符数组中。
+ *       char a1[] = {'c','+','+'}; // 普通字符数组
+ *       char a2[] = {'c','+','+','\0'}; // 是c风格字符串
+ *       char a3[] = "c++"; // 字符串字面值初始化字符数组，并在末尾自动追加字符串结束符 \0。
+ *       a1的维度是3， a2和a3的维度是4
+ *       a2和a3是等价的，都是c风格字符串.
+ *       char* str4 = "c++";//字符指针指向字符串字面量 只读。省略了const 不推荐
+ *       const char* str5 = "c++";//字符指针指向C风格字符串 推荐
+ *
  *       复杂数组的声明
  *       int *ptrArr[10]; // ptrArr是一个含有10个指向int类型的指针的数组
  *       int &refArr[10]; // 错误，不能定义引用数组, 引用不是对象
@@ -92,16 +99,26 @@ using namespace std;
  *   3.5.4 c风格字符串
  *         c风格字符串不是一种类型，而是一种使用char数组来存放字符串的习惯用法，按次习惯书写的字符串以空字符'\0'结尾
  *         cstring.h头文件定义了一组处理c风格字符串的标准库函数 strlen strcpy strcat strcmp 等等
+ *         strlen(str)； 返回c风格字符串str的长度，不包括结尾的'\0'
+ *         strcmp(str1,str2); 比较两个c风格字符串的大小，按字典顺序比较，相等返回0，第一个字符串大返回正值，第二个字符串大返回负值
+ *         strcpy(dest,src); 将src指向的c风格字符串拷贝到dest指向的内存空间，dest必须足够大以容纳src字符串,覆盖式拷贝，不保留目标字符串原有数据
+ *         strcat(dest,src); 将src指向的c风格字符串连接到dest指向的c风格字符串的结尾，dest必须足够大以容纳连接后的字符串,追加
  *         char str[] = {'h','e','l','l','o' }; // 不是c风格字符串，没有用'\0'结尾，使用c风格字符串的函数也会报错
  *         c风格字符串本质是数组无法使用关系运算符比较大小，只能使用strcmp函数比较两个c风格字符串的大小
  *         使用strcmp比较两个c风格字符串的大小，按字典顺序比较，相等返回0，第一个字符串大返回正值，第二个字符串大返回负值
  *         总之使用string比c风格字符串更安全更方便
  *   3.5.5 与旧代码的接口
  *         c++串门提供了一些功能兼容c风格字符串的接口
+ *         c_str()成员函数 返回一个指向常量c风格字符串的 const char* 指针（不可修改内容）；，该字符串与string对象内容相同，如果string内容修改，指针失效
+ *         data() C++11 及以后：与 c_str() 功能完全一致，返回带 \0 的 const char*； C++11 之前：返回不带 \0 的字符数组指针（仅兼容旧标准）
+ *         c风格字符串转string，有两种 
+ *         const char* c_str1 = "Hello C++";
+ *         string cpp_str1(c_str1); // 拷贝初始化
+ *         string cpp_str2 = c_str1; // 直接初始化
  *   3.6   多维数组
- *         
- *         
- *         
+ *
+ *
+ *
  *
  *
  *
@@ -160,25 +177,29 @@ int main()
     }
     int *b = begin(arr);
     int *e = end(arr);
-    //3.5.4 比较两个字符串
+    // 3.5.4 比较两个字符串
     string a1 = "apple";
     string a2 = "banana";
-    if(a1 < a2)
+    if (a1 < a2)
     {
-        cout << a2 << " is less than " << a1 << endl;//字典顺序比较
+        cout << a2 << " is less than " << a1 << endl; // 字典顺序比较
 
-    }//用关系运算符比较两个string大小
+    } // 用关系运算符比较两个string大小
     char cstr1[] = "apple";
     char cstr2[] = "banana";
     char cstr3[20];
     // if(cstr2 < cstr1)//错误，使用数组实际上用的是指向首元素的指针，这两个指针没有指向同一数组的元素，所以比较没有意义
-    //连接和拷贝字符串
+    // 连接和拷贝字符串
     string a3 = a1 + a2; // 连接两个string
-    //使用strcat strcpy连接和拷贝c风格字符串
-    strcpy(cstr3,cstr1);//拷贝cstr1到cstr3
-    cout<< "cstr3: " << cstr3 << endl;
-    strcat(cstr3,cstr2);//连接cstr2到cstr3
-    cout<< "cstr3: " << cstr3 << endl;
-   
+    cout << "cstr1 length " << strlen(cstr1) << endl;
+    cout << "cop ctr1 and ctr2 " << strcmp(cstr1, cstr2) << endl;
+    // 使用strcat strcpy连接和拷贝c风格字符串
+    strcpy(cstr3, cstr1); // 拷贝cstr1到cstr3
+    cout << "cstr3: " << cstr3 << endl;
+    strcat(cstr3, cstr2); // 连接cstr2到cstr3
+    cout << "cstr3: " << cstr3 << endl;
+    // 3.5.5
+    string cppStr = "C++ String";
+    cppStr.c_str(); // 返回一个指向常量c风格字符串的指针，该字符串与cppStr内容相同
     return 0;
 }
