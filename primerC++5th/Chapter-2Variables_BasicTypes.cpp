@@ -93,7 +93,7 @@ using namespace std;
  *        引用类型不能绑定字面值， 不能自动转换 例如 double b = 10; int &r = b; 这是错误的；引用不是对象所以引用不能绑定引用
  *    6.2 指针 类型名 *变量名; 指针是一个变量，存储另一个变量的地址，指针变量可以改变指向，指针不用在定义时初始化，但是未经初始化的指针使用时会报错，最好在定义时初始化
  *        指针不能指向其他类型的对象，编译报错。
- *        空指针不是未经初始化的指针而是不指向任何对象  int *p = nullptr; int *p = 0; int *p = NULL; 都表示空指针。c++对剑第一种；NULL 实际是 0
+ *        空指针不是未经初始化的指针而是不指向任何对象  int *p = nullptr; int *p = 0; int *p = NULL; 都表示空指针。c++推荐第一种；NULL 实际是 0
  *        6.2.1 void* 指针 是一种特殊的指针可以存放任意类型的地址  void *p;
  *        6.2.2 指针的指针 类型名 **变量名; 存储指针地址的指针 int a = 10; int *p = &a; int **pp = &p;
  *        6.2.3 指向指针的引用 类型名 *&变量名 = 已有指针变量名;int a = 10; int *p = &a; int *&r = p;
@@ -140,15 +140,47 @@ using namespace std;
  *           constexpr int *q = nullptr;     //q是一个指针常量
  * 7. 类型别名
  *    typdef 类型名 类型别名
+ *    
  *    using 类型别名 = 原类型 c++11新标准
  * 8. auto类型自动推导
  *           
- * 9. decltype类型指示符
- * 10 编写自己的头文件   
- * 
- *           
+ * 2.5.3. decltype类型指示符
+ * 2.6 自定义数据结构
+ *     数据结构：struct 名称{ };  结构体部分可以为空，最后以;结尾， 结构体部分可以包含变量和方法，默认成员为 public
+ *     typdef struct{} XXX; 给匿名结构体起别名
+ *     定义一个结构体变量并初始化内部属性：  Book cpp_book{"9787115428028", "C++ Primer 5th", 89.0, 100};//按照属性生命顺序赋值
+ *     指定成员名初始化（C++20 起支持，最清晰）：Sales_data sd{.revenue = 690.0,.bookNo = "9787121387027",.units_sold = 10};
+ *     构造函数初始化：和类初始化方式一样，省略
+ *     调用结构体变量的方法： cpp_book.show_info();
+ *     struct vs class 语法区别（实用）
+ *     仅默认访问权限 / 继承权限不同，功能完全一致；
+ *     简单数据聚合用 struct，复杂封装 / 业务逻辑用 class；
+ *     
+ * 2.6.3 编写自己的头文件   
  * 
  */
+// 2.6 定义一个表示图书信息的结构体（自定义数据结构）
+struct Book {
+    // 数据成员
+    string isbn;
+    string title;
+    double price = 0.0;
+    int stock = 0;
+
+    // 成员函数（C++的struct可包含函数）
+    // 只读函数加const，保证安全性
+    void show_info() const {
+        cout << "ISBN: " << isbn << ", 标题: " << title 
+             << ", 价格: " << price << ", 库存: " << stock << endl;
+    }
+
+    // 修改数据的函数
+    bool reduce_stock(int num) {
+        if (num > stock) return false;
+        stock -= num;
+        return true;
+    }
+};
 #define day 7
 int main()
 {
