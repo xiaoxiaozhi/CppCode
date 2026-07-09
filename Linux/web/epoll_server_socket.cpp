@@ -1,93 +1,199 @@
 #include <sys/socket.h>
 #include <stdio.h>
-#include <cstdlib>      // exit（）头文件
-#include <netinet/in.h> //IPPROTO_TCP 头文件是这个吗？sockaddr_in 头文件，windows下看不到该结构体，Linux下可以
-#include <netdb.h>      //IPPROTO_TCP 是这个吗？
+#include <cstdlib>      // exit()
+#include <netinet/in.h> // sockaddr_in
 #include <unistd.h>
-#include <arpa/inet.h> //htons 头文件
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <sys/select.h>
+#include <arpa/inet.h>  // htons
 #include <string.h>
 #include <iostream>
-#include <sys/epoll.h>
-#include <sys/epoll.h>
+#include <sys/epoll.h>  // epoll 头文件
+#include <errno.h>
 using namespace std;
 
 /**
+ * epoll 工作流程：
  *
- * // 创建epoll实例，通过一棵红黑树管理待检测集合
+ * 1. epoll_create()  → 创建 epoll 实例（红黑树 + 就绪链表）
+ * 2. epoll_ctl()     → 将需要监控的文件描述符添加到红黑树
+ * 3. epoll_wait()    → 阻塞等待，返回就绪的文件描述符列表
+ *
+ * 三大核心函数：
+ *
  * int epoll_create(int size);
- * size：在Linux内核2.6.8版本以后，这个参数是被忽略的，只需要指定一个大于0的数值就可以了。
- * 返回：失败返回-1 成功返回一个有效的文件描述符，通过这个文件描述符就可以访问创建的epoll实例了
- * // 管理红黑树上的文件描述符(添加、修改、删除)
+ *   - 创建 epoll 实例
+ *   - 返回 epoll 文件描述符 efd
+ *
  * int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
- * epfd：红黑树的根节点
- * op：这是一个枚举值，控制通过该函数执行什么操作
- *     EPOLL_CTL_ADD：往epoll模型中添加新的节点
- *     EPOLL_CTL_MOD：修改epoll模型中已经存在的节点
- *     EPOLL_CTL_DEL：删除epoll模型中的指定的节点
+ *   - op: EPOLL_CTL_ADD(添加) / EPOLL_CTL_MOD(修改) / EPOLL_CTL_DEL(删除)
+ *   - event.events: EPOLLIN(读) / EPOLLOUT(写) / EPOLLERR(异常)
+ *   - event.data.fd: 存储文件描述符
  *
- * events：委托epoll检测的事件
- *         EPOLLIN：读事件, 接收数据, 检测读缓冲区，如果有数据该文件描述符就绪
- *         EPOLLOUT：写事件, 发送数据, 检测写缓冲区，如果可写该文件描述符就绪
- *         EPOLLERR：异常事件
- *         data：用户数据变量，这是一个联合体类型，通常情况下使用里边的fd成员，用于存储待检测的文件描述符的值，与第三个参数相同
- * 失败返回-1 成功返回0
- *
- * // 检测epoll树中是否有就绪的文件描述符
- * int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
- * events：传出参数, 这是一个结构体数组的地址, 里边存储了已就绪的文件描述符的信息
- * timeout：如果检测的epoll实例中没有已就绪的文件描述符，该函数阻塞的时长, 单位ms 毫秒
- *          0：函数不阻塞，不管epoll实例中有没有就绪的文件描述符，函数被调用后都直接返回
- *          大于0：如果epoll实例中没有已就绪的文件描述符，函数阻塞对应的毫秒数再返回
- *          -1：函数一直阻塞，直到epoll实例中有已就绪的文件描述符之后才解除阻塞
- * 失败返回-1 成功 返回0代表函数是阻塞被强制解除了, 没有检测到满足条件的文件描述符 返回>0 检测到的已就绪的文件描述符的总个数
- *
+ * int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+ *   - events: 传出参数，内核将就绪事件写入该数组
+ *   - timeout: -1(阻塞) / 0(立即返回) / >0(毫秒)
+ *   - 返回: >0(就绪数量) / 0(超时) / -1(出错)
  */
+
+#define MAX_EVENTS 1024
 
 int main()
 {
-    // 1. 创建监听的套接字
-    // int lfd = socket(AF_INET, SOCK_STREAM, 0);
+    // 1. 创建监听套接字
     int lfd = socket(AF_INET, SOCK_STREAM, 0);
     if (lfd == -1)
     {
         perror("socket");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
-    // 2. 将socket()返回值和本地的IP端口绑定到一起
+    // 2. 设置端口复用（方便调试，避免 "Address already in use"）
+    int opt = 1;
+    setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+    // 3. 绑定 IP 和端口
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(10000); // 大端端口
-                                  // INADDR_ANY代表本机的所有IP, 假设有三个网卡就有三个IP地址
-                                  // 这个宏可以代表任意一个IP地址
-                                  // 这个宏一般用于本地的绑定操作
-    // addr.sin_addr.s_addr = INADDR_ANY;  // 这个宏的值为0 == 0.0.0.0
+    addr.sin_port = htons(10000);
     inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr.s_addr);
+
     int ret = bind(lfd, (struct sockaddr *)&addr, sizeof(addr));
     if (ret == -1)
     {
         perror("bind");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
-    // 3. 设置监听
+    // 4. 设置监听
     ret = listen(lfd, 128);
     if (ret == -1)
     {
         perror("listen");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
-    //4. 创建对象epoll根节点
-    int efd = epoll_create(1024);
-    struct epoll_event event;
-    event.evens = EPOLLIN;
-    event.data = lfd;
-    epoll_ctl(efd,EPOLL_CTL_ADD,lfd,&event);
 
+    cout << "========== epoll 服务器启动 ==========" << endl;
+    cout << "监听地址: 127.0.0.1:10000" << endl;
+    cout << "工作模式: LT（水平触发，默认模式）" << endl;
+    cout << "======================================" << endl;
+
+    // 5. 创建 epoll 实例
+    int efd = epoll_create(MAX_EVENTS);
+    if (efd == -1)
+    {
+        perror("epoll_create");
+        exit(EXIT_FAILURE);
+    }
+
+    // 6. 将监听套接字 lfd 添加到 epoll 监控
+    struct epoll_event event;
+    event.events = EPOLLIN;     // 监听读事件
+    event.data.fd = lfd;        // 保存文件描述符
+
+    ret = epoll_ctl(efd, EPOLL_CTL_ADD, lfd, &event);
+    if (ret == -1)
+    {
+        perror("epoll_ctl (add lfd)");
+        exit(EXIT_FAILURE);
+    }
+
+    // 7. 创建 epoll_event 数组，用于接收就绪事件
+    struct epoll_event events[MAX_EVENTS];
+
+    // 8. 事件循环（核心）
+    while (1)
+    {
+        cout << "\n等待事件就绪..." << endl;
+
+        // epoll_wait() 阻塞等待事件就绪
+        // 参数：efd, 传出数组events, 数组大小, 超时时间-1(永远阻塞)
+        int nready = epoll_wait(efd, events, MAX_EVENTS, -1);
+
+        if (nready == -1)
+        {
+            perror("epoll_wait");
+            break;
+        }
+
+        // 遍历就绪的事件数组
+        for (int i = 0; i < nready; i++)
+        {
+            if (events[i].events & EPOLLIN)  // 读事件就绪
+            {
+                if (events[i].data.fd == lfd)
+                {
+                    // ===== 情况1：有新客户端连接 =====
+                    struct sockaddr_in cliaddr;
+                    socklen_t clilen = sizeof(cliaddr);
+                    int cfd = accept(lfd, (struct sockaddr *)&cliaddr, &clilen);
+
+                    if (cfd == -1)
+                    {
+                        perror("accept");
+                        continue;
+                    }
+
+                    char client_ip[16];
+                    inet_ntop(AF_INET, &cliaddr.sin_addr.s_addr, client_ip, sizeof(client_ip));
+                    cout << "新客户端连接: " << client_ip << ":" << ntohs(cliaddr.sin_port)
+                         << " (fd=" << cfd << ")" << endl;
+
+                    // 将新客户端 cfd 加入 epoll 监控
+                    struct epoll_event ev;
+                    ev.events = EPOLLIN;     // 监听读事件（LT模式，默认）
+                    ev.data.fd = cfd;
+
+                    ret = epoll_ctl(efd, EPOLL_CTL_ADD, cfd, &ev);
+                    if (ret == -1)
+                    {
+                        perror("epoll_ctl (add cfd)");
+                        close(cfd);
+                    }
+                }
+                else
+                {
+                    // ===== 情况2：已有客户端发送数据 =====
+                    char buf[1024];
+                    int fd = events[i].data.fd;
+                    int len = read(fd, buf, sizeof(buf) - 1);
+
+                    if (len == -1)
+                    {
+                        perror("read");
+                        // 从 epoll 中移除并关闭
+                        epoll_ctl(efd, EPOLL_CTL_DEL, fd, NULL);
+                        close(fd);
+                    }
+                    else if (len == 0)
+                    {
+                        // 客户端断开连接
+                        cout << "客户端断开连接 (fd=" << fd << ")" << endl;
+                        epoll_ctl(efd, EPOLL_CTL_DEL, fd, NULL);
+                        close(fd);
+                    }
+                    else
+                    {
+                        buf[len] = '\0';
+                        cout << "收到数据 (fd=" << fd << "): " << buf;
+
+                        // 回显数据（echo server）
+                        write(fd, buf, len);
+                    }
+                }
+            }
+
+            // 如果有异常事件（如对方异常断开）
+            if (events[i].events & (EPOLLERR | EPOLLHUP))
+            {
+                int fd = events[i].data.fd;
+                cout << "客户端异常断开 (fd=" << fd << ")" << endl;
+                epoll_ctl(efd, EPOLL_CTL_DEL, fd, NULL);
+                close(fd);
+            }
+        }
+    }
+
+    // 清理
     close(lfd);
+    close(efd);
     return 0;
 }
